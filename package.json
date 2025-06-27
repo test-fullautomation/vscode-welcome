@@ -1,0 +1,41 @@
+{
+    "name": "robotframework-aio-welcome",
+    "displayName": "Robotframework AIO Welcome Page",
+    "description": "A custom welcome page for Robotframework AIO in VSCodium",
+    "version": "0.0.1",
+    "publisher": "TriMai",
+    "engines": {
+        "vscode": "^1.60.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "onStartupFinished"
+    ],
+    "main": "./extension.js",
+    "contributes": {
+        "commands": [
+            {
+                "command": "extension.showRobotframeworkWelcome",
+                "title": "Show Robotframework AIO Welcome Page"
+            }
+        ],
+        "configuration": {
+            "title": "Robotframework AIO Welcome",
+            "properties": {
+                "robotframeworkWelcome.hasSeenWelcome": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Indicates whether the Robotframework AIO welcome page has been shown."
+                }
+            }
+        }
+    },
+    "scripts": {
+        "package": "vsce package"
+    },
+    "devDependencies": {
+        "vsce": "^2.15.0"
+    }
+}
