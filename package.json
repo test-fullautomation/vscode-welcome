@@ -3,7 +3,7 @@
     "displayName": "Robotframework AIO Welcome Page",
     "description": "A custom welcome page for Robotframework AIO in VSCodium",
     "version": "0.0.1",
-    "publisher": "TriMai",
+    "publisher": "test-fullautomation",
     "engines": {
         "vscode": "^1.60.0"
     },
