@@ -1,5 +1,5 @@
 {
-    "name": "robotframework-aio-welcome",
+    "name": "vscode-welcome",
     "displayName": "Robotframework AIO Welcome Page",
     "description": "A custom welcome page for Robotframework AIO in VSCodium",
     "version": "0.0.1",
