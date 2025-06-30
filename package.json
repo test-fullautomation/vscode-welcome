@@ -3,7 +3,11 @@
     "displayName": "Robotframework AIO Welcome Page",
     "description": "A custom welcome page for Robotframework AIO in VSCodium",
     "version": "0.0.1",
+    "version-date": "06.2025",
     "publisher": "test-fullautomation",
+    "author": {
+        "name": "Mai Minh Tri"
+    },
     "engines": {
         "vscode": "^1.60.0"
     },

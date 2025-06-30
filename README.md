@@ -1,6 +1,6 @@
-# vscode-welcome - vscode extension
+vscode-welcome - vscode extension ========================
 
-## Table of Contents
+# Table of Contents
 
 -   [Getting Started](#getting-started)
     -   [How to install](#how-to-install)
@@ -10,33 +10,36 @@
 -   [Contributors](#contributors)
 -   [License](#license)
 
-## Getting Started
+# Getting Started
 
-**VSCodeWelcome** is a VSCodium extension that enhances the user experience
-by displaying a RobotFramework-AIO introduction for new users.
+**VSCodeWelcome** is a VSCodium extension that enhances the user
+experience by displaying a RobotFramework-AIO introduction for new
+users.
 
-### How to install
+## How to install
 
 This extension is currently not available on [Visual Studio
 Marketplace](https://marketplace.visualstudio.com/vscode) or [Open VSX
 Registry](https://open-vsx.org/), so you can install it manually as
 following steps:
 
--   Get the latest extension *vscode-welcome-x.x.x.vsix* file from this repo.
+-   Get the latest extension *vscode-welcome-x.x.x.vsix* file from this
+    repo.
 -   Open [Visual Studio Code](https://code.visualstudio.com/) or
     [VSCodium](https://vscodium.com/), select **Extensions** Tab then
     chose **Install from VSIX**
--   Browse to the downloaded *vscode-welcome-x.x.x.vsix* file then install.
+-   Browse to the downloaded *vscode-welcome-x.x.x.vsix* file then
+    install.
 
-As soon as the installtion is completed, the welcome page will be displayed
-for the newly installed RobotFramework-AIO.
+As soon as the installtion is completed, the welcome page will be
+displayed for the newly installed RobotFramework-AIO.
 
-## Package Documentation
+# Package Documentation
 
 A detailed documentation of the **VSCodeWelcome** can be found here:
 [VSCodeWelcome.pdf](https://github.com/test-fullautomation/vscode-welcome/blob/develop/VSCodeWelcome/VSCodeWelcome.pdf)
 
-## Feedback
+# Feedback
 
 To give us a feedback, you can send an email to [Thomas
 Pollerspöck](mailto:Thomas.Pollerspoeck@de.bosch.com)
@@ -44,17 +47,17 @@ Pollerspöck](mailto:Thomas.Pollerspoeck@de.bosch.com)
 In case you want to report a bug or request any interesting feature,
 please don\'t hesitate to raise a ticket.
 
-## Maintainers
+# Maintainers
 
 [Thomas Pollerspöck](mailto:Thomas.Pollerspoeck@de.bosch.com)
 
 [Mai Minh Tri](mailto:Tri.MaiMinh@vn.bosch.com)
 
-## Contributors
+# Contributors
 
 [Mai Minh Tri](mailto:Tri.MaiMinh@vn.bosch.com)
 
-## License
+# License
 
 Copyright 2020-2023 Robert Bosch GmbH
 
