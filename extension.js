@@ -64,15 +64,7 @@ function activate(context) {
                 windowsLogoUri: getResourceUri(panel.webview, 'images', 'Windows-logo.png'),
                 linuxLogoUri: getResourceUri(panel.webview, 'images', 'Linux-logo.png'),
                 tutorialGifUri: getResourceUri(panel.webview, 'images', 'Tutorial.gif'),
-                robotframeworkIcoUri: getResourceUri(panel.webview, 'images', 'RobotFramework_AIO.ico'),
-
-                // Load js resources
-                jqueryJsUri: getResourceUri(panel.webview, 'js', 'jquery-3.6.0.min.js'),
-                popperJsUri: getResourceUri(panel.webview, 'js', 'popper.min.js'),
-                bootstrapJsUri: getResourceUri(panel.webview, 'js', 'bootstrap.min.js'),
-                prismJsUri: getResourceUri(panel.webview, 'js', 'prism.min.js'),
-                prismBashJsUri: getResourceUri(panel.webview, 'js', 'prism-bash.min.js'),
-                scriptsJsUri: getResourceUri(panel.webview, 'js', 'scripts.js'),
+                robotframeworkIcoUri: getResourceUri(panel.webview, 'images', 'RobotFramework_AIO.ico')
             }
 
             // Load nav and footer
@@ -80,38 +72,51 @@ function activate(context) {
             const footerContent = loadContent('footer', 'html', resourceUris);
 
             htmlContent = htmlContent
-                .replace('{{navContent}}', navContent)
-                .replace('{{footerContent}}', footerContent)
+                .replace(/<nav([^>]*)>([\s\S]*?)<\/nav>/, `<nav$1>${navContent}</nav>`)
+                .replace(/<footer([^>]*)>([\s\S]*?)<\/footer>/, `<footer$1>${footerContent}</footer>`);
 
             // Load content from html/content
             const sectionFolder = path.join('html', 'contents');
-            const sections = ['background', 'features', 'downloads', 'usage', 'documentation', 'about'];
+            const sections = ["background", "features", "downloads", "usage", "documentation", "about", "contribution"];
             for (const section of sections) {
+                if (section == "contribution") {
+                    htmlContent = htmlContent.replaceAll('contribution.html', 'https://robotframework-aio.org/contribution.html');
+                    htmlContent = htmlContent.replaceAll('<i class="fas fa-thumbs-up"></i>', '');
+                    htmlContent = htmlContent.replaceAll('<i class="fab fa-github"></i>', '');
+                    continue;
+                }
                 const sectionContent = loadContent(section, sectionFolder, resourceUris);
-                htmlContent = htmlContent.replaceAll(`{{sectionContent:${section}}}`, sectionContent);
+                let modifiedStr = section.charAt(0).toUpperCase() + section.slice(1);
+                if (section == "about") {
+                    modifiedStr += " Us"
+                }
+                htmlContent = htmlContent.replaceAll(`<section id="${section}"></section>`, `<section id="${section}">${sectionContent}</section>`);
+                htmlContent = htmlContent.replaceAll(`<a class="nav-link" href="index.html#${section}" data-target="#${section}">${modifiedStr}</a>`, `<a class="nav-link" href="#${section}" data-section="${section}">${modifiedStr}</a>`);
             }
 
             htmlContent = htmlContent
-                .replaceAll('{{bootstrapUri}}', resourceUris.bootstrapUri)
-                .replaceAll('{{allminUri}}', resourceUris.allminUri)
-                .replaceAll('{{prismUri}}', resourceUris.prismUri)
-                .replaceAll('{{styleUri}}', resourceUris.styleUri)
-                .replaceAll('{{packageUri}}', resourceUris.packageUri)
-                .replaceAll('{{puzzleUri}}', resourceUris.puzzleUri)
-                .replaceAll('{{vscodiumWorkspaceUri}}', resourceUris.vscodiumWorkspaceUri)
-                .replaceAll('{{tsmUri}}', resourceUris.tsmUri)
-                .replaceAll('{{dashboardUri}}', resourceUris.dashboardUri)
-                .replaceAll('{{tutorialGifUri}}', resourceUris.tutorialGifUri)
-                .replaceAll('{{windowsLogoUri}}', resourceUris.windowsLogoUri)
-                .replaceAll('{{linuxLogoUri}}', resourceUris.linuxLogoUri)
-                .replaceAll('{{robotframeworkIcoUri}}', resourceUris.robotframeworkIcoUri)
-                .replaceAll('{{jqueryJsUri}}', resourceUris.jqueryJsUri)
-                .replaceAll('{{popperJsUri}}', resourceUris.popperJsUri)
-                .replaceAll('{{bootstrapJsUri}}', resourceUris.bootstrapJsUri)
-                .replaceAll('{{prismJsUri}}', resourceUris.prismJsUri)
-                .replaceAll('{{prismBashJsUri}}', resourceUris.prismBashJsUri)
-                .replaceAll('{{scriptsJsUri}}', resourceUris.scriptsJsUri);
+                .replaceAll('./css/styles.css', resourceUris.styleUri)
+                .replaceAll('./images/AIO_package.png', resourceUris.packageUri)
+                .replaceAll('./images/puzzle.png', resourceUris.puzzleUri)
+                .replaceAll('./images/VSCodium-workspace.png', resourceUris.vscodiumWorkspaceUri)
+                .replaceAll('./images/tsm.png', resourceUris.tsmUri)
+                .replaceAll('./images/Dashboard.png', resourceUris.dashboardUri)
+                .replaceAll('./images/Tutorial.gif', resourceUris.tutorialGifUri)
+                .replaceAll('./images/Windows-logo.png', resourceUris.windowsLogoUri)
+                .replaceAll('./images/Linux-logo.png', resourceUris.linuxLogoUri)
+                .replaceAll('./images/RobotFramework_AIO.ico', resourceUris.robotframeworkIcoUri)
+                .replaceAll('./js/scripts.js', resourceUris.scriptsJsUri)
+                .replace(
+                    /<link[^>]*href=["'](.*?\.css)["'][^>]*>/g,
+                    (match, url) => {
+                        if (url.includes('bootstrap')) return `<link href="${resourceUris.bootstrapUri}" rel="stylesheet">`;
+                        if (url.includes('font-awesome') || url.includes('all.min')) return `<link href="${resourceUris.allminUri}" rel="stylesheet">`;
+                        if (url.includes('prism')) return `<link href="${resourceUris.prismUri}" rel="stylesheet">`;
+                        return match; // Return unchanged if no match
+                    }
+                );
 
+            // Set the webview content
             panel.webview.html = htmlContent;
 
             panel.webview.onDidReceiveMessage(

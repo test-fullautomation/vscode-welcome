@@ -2,7 +2,7 @@
 
 # Define paths to the source and destination directories
 SOURCE_DIR="./RobotFramework_AIO_website"
-DEST_DIR="./vscode_welcome"
+DEST_DIR="./vscode-welcome"
 
 # Define URLs for the CSS files
 FONT_AWESOME_URL="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
