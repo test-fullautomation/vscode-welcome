@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Define paths to the source and destination directories
-SOURCE_DIR="./RobotFramework_AIO_website"
-DEST_DIR="./vscode-welcome"
+SOURCE_DIR="../RobotFramework_AIO_website"
+DEST_DIR="./"
 
 # Define URLs for the CSS files
 FONT_AWESOME_URL="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
@@ -97,3 +97,27 @@ download_file "$BOOTSTRAP_URL" "$DEST_DIR/css/$BOOTSTRAP_FILE" || download_faile
 download_file "$PRISM_URL" "$DEST_DIR/css/$PRISM_FILE" || download_failed=true
 
 echo "All files downloaded successfully!"
+
+# Check if vsce is installed
+if command -v vsce >/dev/null 2>&1; then
+  echo "vsce is already installed."
+else
+  # Download and install vsce
+  echo "Installing vsce..."
+  if command -v npm >/dev/null 2>&1; then
+    npm install -g @vscode/vsce
+    if command -v vsce >/dev/null 2>&1; then
+      echo "vsce installed successfully!"
+    else
+      echo "Error: Failed to install vsce" >&2
+      exit 1
+    fi
+  else
+    echo "Error: npm is not installed. Please install Node.js and npm first." >&2
+    exit 1
+  fi
+fi
+
+# Run vsce to package or publish the extension
+echo "Running vsce..."
+vsce package --allow-missing-repository || { echo "Error: Failed to package the extension using vsce" >&2; exit 1; }
