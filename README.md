@@ -11,10 +11,15 @@ vscode-welcome - vscode extension ========================
 -   [License](#license)
 
 # Getting Started
-
 **VSCodeWelcome** is a VSCodium extension that enhances the user
 experience by displaying a RobotFramework-AIO introduction for new
 users.
+
+## How to build
+
+-   Clone the "RobotFramework_AIO_website" repository.
+
+-   Run `build_vsix.sh` to build the extension.
 
 ## How to install
 

@@ -33,8 +33,15 @@ Getting Started
 **VSCodeWelcome** is a VSCodium extension that enhances the user experience
 by displaying a RobotFramework-AIO introduction for new users.
 
+How to build
+------------
+
+- Clone the "RobotFramework_AIO_website" repository.
+
+- Run `build_vsix.sh` to build the extension.
+
 How to install
-~~~~~~~~~~~~~~
+--------------
 
 This extension is currently not available on `Visual Studio Marketplace`_ or
 `Open VSX Registry`_, so you can install it manually as  following steps:
