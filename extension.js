@@ -44,6 +44,11 @@ function activate(context) {
                 </body>
                 </html>
             `;
+
+            panel.onDidDispose(() => {
+                // Update the configuration to mark that the welcome has been seen
+                config.update('hasSeenWelcome', true, vscode.ConfigurationTarget.Global);
+            }, null, context.subscriptions);
         });
 
         vscode.commands.executeCommand('extension.showRobotframeworkWelcome');
