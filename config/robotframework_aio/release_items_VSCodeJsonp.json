@@ -45,7 +45,14 @@
 # ------------------------------------------
 
    "RELEASES"  : {
-                   "0.14." : [
-                             ]
+                   "0.14.2.;0.15.0." : [
+"
+**Initial Robotframework-AIO Welcome Page**
+
+* Introduced the `robotframeworkWelcome` feature to enhance the user experience with a dedicated welcome page.
+* Allows customization of the welcome page URL, supporting both online URLs and local file paths.
+* Provides a seamless way to guide users with relevant resources and documentation upon extension installation.
+"
+                                       ]
                  }
 }
