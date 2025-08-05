@@ -53,7 +53,7 @@ This extension is currently not available on `Visual Studio Marketplace`_ or
   **Install from VSIX**
 - Browse to the downloaded *vscode-welcome-x.x.x.vsix* file then install.
 
-As soon as the installtion is completed, the welcome page will be displayed
+As soon as the installation is completed, the welcome page will be displayed
 for the newly installed RobotFramework-AIO.
 
 How to set a custom URL for the welcome page
