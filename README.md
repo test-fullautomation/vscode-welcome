@@ -1,4 +1,5 @@
-vscode-welcome - vscode extension ========================
+vscode-welcome - vscode extension
+=================================
 
 # Table of Contents
 
@@ -36,7 +37,7 @@ following steps:
 -   Browse to the downloaded *vscode-welcome-x.x.x.vsix* file then
     install.
 
-As soon as the installtion is completed, the welcome page will be
+As soon as the installation is completed, the welcome page will be
 displayed for the newly installed RobotFramework-AIO.
 
 ## How to set a custom URL for the welcome page
