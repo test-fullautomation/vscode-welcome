@@ -39,6 +39,18 @@ following steps:
 As soon as the installtion is completed, the welcome page will be
 displayed for the newly installed RobotFramework-AIO.
 
+## How to set a custom URL for the welcome page
+
+If you want to display a custom URL in the welcome page, follow these steps:
+
+1. Look for the setting named `robotframeworkWelcome.welcomeUrl` in `package.json`
+2. Enter the desired URL (e.g., `https://your-custom-url.com`) or a local file path (e.g., `file:///absolute/path/to/file.html`) in the input field.
+3. Save the settings.
+4. Run `build_vsix.sh` to build the extension.
+5. Install `vscode-welcome-x.x.x.vsix`.
+
+The next time the welcome page is displayed, it will load the custom URL you specified.
+
 # Package Documentation
 
 A detailed documentation of the **VSCodeWelcome** can be found here:

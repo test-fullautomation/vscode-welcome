@@ -13,14 +13,16 @@
    limitations under the License.
 
 vscode-welcome - vscode extension
-========================
+=================================
 
 Table of Contents
 -----------------
 
 -  `Getting Started <#getting-started>`__
 
+   -  `How to build <#how-to-build>`__
    -  `How to install <#how-to-install>`__
+   -  `How to set a custom URL for the welcome page <#how-to-set-a-custom-url-for-the-welcome-page>`__
 -  `Package Documentation <#package-documentation>`__
 -  `Feedback <#feedback>`__
 -  `Maintainers <#maintainers>`__
@@ -53,6 +55,19 @@ This extension is currently not available on `Visual Studio Marketplace`_ or
 
 As soon as the installtion is completed, the welcome page will be displayed
 for the newly installed RobotFramework-AIO.
+
+How to set a custom URL for the welcome page
+--------------------------------------------
+
+If you want to display a custom URL in the welcome page, follow these steps:
+
+1. Look for the setting named ``robotframeworkWelcome.welcomeUrl`` in ``package.json``.
+2. Enter the desired URL (e.g., ``https://your-custom-url.com``) or a local file path (e.g., ``file:///absolute/path/to/file.html``) in the input field.
+3. Save the settings.
+4. Run ``build_vsix.sh`` to build the extension.
+5. Install ``vscode-welcome-x.x.x.vsix``.
+
+The next time the welcome page is displayed, it will load the custom URL you specified.
 
 Package Documentation
 ---------------------
@@ -104,5 +119,4 @@ limitations under the License.
 .. _Visual Studio Code: https://code.visualstudio.com/
 .. _VSCodium: https://vscodium.com/
 .. _Thomas Pollerspöck: mailto:Thomas.Pollerspoeck@de.bosch.com
-.. _Tran Duy Ngoan: mailto:Ngoan.TranDuy@vn.bosch.com
-.. _Holger Queckenstedt: mailto:Holger.Queckenstedt@de.bosch.com
+.. _Mai Minh Tri: mailto:Tri.Maiminh@vn.bosch.com

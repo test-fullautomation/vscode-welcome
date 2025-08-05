@@ -16,5 +16,81 @@
 %
 % --------------------------------------------------------------------------------------------------------------
 
-The \pkg\ does this and that. That has to be explained here.
+\hypertarget{description-getting-started}{%
+\section{Getting Started}\label{description-getting-started}}
 
+\textbf{VSCodeWelcome} is a VSCodium extension that enhances the user
+experience by displaying a RobotFramework-AIO introduction for new
+users.
+
+\hypertarget{description-usage}{%
+\section{Usage}\label{description-usage}}
+
+\subsection{How to Install}
+
+To install the \textbf{Robotframework Welcome} extension:
+
+\begin{enumerate}
+    \item Download the extension package or clone the repository.
+    \item Run the build script \texttt{build\_vsix.sh} to generate the VSIX file.
+    \item Open Visual Studio Code or VSCodium.
+    \item Select the generated \texttt{robotframework-welcome-x.x.x.vsix} file to install the extension.
+\end{enumerate}
+
+\subsection{How to Set a Custom URL for the Welcome Page}
+
+To customize the URL displayed on the welcome page:
+
+\begin{enumerate}
+    \item Look for the setting named \texttt{robotframeworkWelcome.welcomeUrl} in the \texttt{package.json} file.
+    \item Enter the desired URL (e.g., \url{https://your-custom-url.com}) or a local file path (e.g., \texttt{file:///absolute/path/to/file.html}).
+    \item Save the changes to the \texttt{package.json} file.
+    \item Run the script \texttt{build\_vsix.sh} to build the extension.
+    \item Install the generated \texttt{robotframework-welcome-x.x.x.vsix} file in Visual Studio Code or VSCodium.
+\end{enumerate}
+
+The next time the welcome page is displayed, it will load the custom URL or local file you specified.
+
+\hypertarget{description-feedback}{%
+\section{Feedback}\label{description-feedback}}
+
+If you have any problem when using the library or think there is a
+better solution for any part of the library, I'd love to know it, as
+this will all help me to improve the library. Please
+don\textquotesingle t hesitate to contact me.
+
+Do share your valuable opinion, I appreciate your honest feedback!
+
+\hypertarget{description-about}{%
+\section{About}\label{description-about}}
+
+\hypertarget{description-maintainers}{%
+\subsection{Maintainers}\label{description-maintainers}}
+
+\href{mailto:Tri.MaiMinh@vn.bosch.com}{Mai Minh Tri}
+
+\hypertarget{description-contributors}{%
+\subsection{Contributors}\label{description-contributors}}
+
+\href{mailto:Tri.MaiMinh@vn.bosch.com}{Mai Minh Tri}
+
+\href{mailto:Thomas.Pollerspoeck@de.bosch.com}{Thomas Pollerspöck}
+
+\hypertarget{description-license}{%
+\section{License}\label{description-license}}
+
+Copyright 2020-2023 Robert Bosch GmbH
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may
+not use this file except in compliance with the License. You may obtain
+a copy of the License at
+
+\begin{quote}
+\url{http://www.apache.org/licenses/LICENSE-2.0}
+\end{quote}
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
