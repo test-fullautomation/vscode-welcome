@@ -15,6 +15,7 @@ function activate(context) {
                 vscode.ViewColumn.One,
                 {
                     enableScripts: true,
+                    localResourceRoots: [vscode.Uri.file(path.dirname(welcomeUrl))], // Allow local file access
                 }
             );
 

@@ -32,6 +32,11 @@
                     "type": "boolean",
                     "default": false,
                     "description": "Indicates whether the Robotframework AIO welcome page has been shown."
+                },
+                "robotframeworkWelcome.welcomeUrl": {
+                    "type": "string",
+                    "default": "https://robotframework-aio.org/",
+                    "description": "The URL to display in the Robotframework Welcome page. You can also set a local file path (e.g., file:///path/to/file.html)."
                 }
             }
         }
