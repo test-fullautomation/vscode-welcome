@@ -9,6 +9,10 @@ function activate(context) {
 
     if (!hasSeenWelcome) {
         let disposable = vscode.commands.registerCommand('extension.showRobotframeworkWelcome', () => {
+            const resolvedWelcomeUrl = welcomeUrl.startsWith('http://') || welcomeUrl.startsWith('https://')
+                ? welcomeUrl
+                : vscode.Uri.file(path.join(context.extensionPath, welcomeUrl)).toString();
+
             const panel = vscode.window.createWebviewPanel(
                 'robotframeworkWelcome',
                 'Welcome to Robotframework AIO',
@@ -17,13 +21,13 @@ function activate(context) {
                     enableScripts: true,
                     localResourceRoots: (welcomeUrl.startsWith('http://') || welcomeUrl.startsWith('https://'))
                         ? []
-                        : [vscode.Uri.file(path.dirname(welcomeUrl))], // Allow local file access
+                        : [vscode.Uri.file(path.dirname(path.join(context.extensionPath, welcomeUrl)))], // Allow local file access
                 }
             );
 
-            if (welcomeUrl.startsWith('file://')) {
+            if (resolvedWelcomeUrl.startsWith('file://')) {
                 // Convert the file URI to a local file path
-                const localFilePath = vscode.Uri.file(welcomeUrl.replace('file://', '')).fsPath;
+                const localFilePath = vscode.Uri.parse(resolvedWelcomeUrl).fsPath;
 
                 // Check if the file exists
                 if (fs.existsSync(localFilePath)) {
@@ -33,7 +37,7 @@ function activate(context) {
                 } else {
                     vscode.window.showErrorMessage(`File not found: ${localFilePath}`);
                 }
-            } else if (welcomeUrl.startsWith('http://') || welcomeUrl.startsWith('https://')) {
+            } else if (resolvedWelcomeUrl.startsWith('http://') || resolvedWelcomeUrl.startsWith('https://')) {
                 // For HTTP/HTTPS URLs, set the Webview's HTML to load the URL
                 panel.webview.html = `
                      <!DOCTYPE html>
