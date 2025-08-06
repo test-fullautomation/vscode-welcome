@@ -50,7 +50,7 @@ This extension is currently not available on `Visual Studio Marketplace`_ or
 
 - Get the latest extension *vscode-welcome-x.x.x.vsix* file from this repo.
 - Open `Visual Studio Code`_ or `VSCodium`_, select **Extensions** Tab then chose
-  **Install from VSIX**
+**Install from VSIX**
 - Browse to the downloaded *vscode-welcome-x.x.x.vsix* file then install.
 
 As soon as the installation is completed, the welcome page will be displayed
@@ -119,4 +119,4 @@ limitations under the License.
 .. _Visual Studio Code: https://code.visualstudio.com/
 .. _VSCodium: https://vscodium.com/
 .. _Thomas Pollerspöck: mailto:Thomas.Pollerspoeck@de.bosch.com
-.. _Mai Minh Tri: mailto:Tri.Maiminh@vn.bosch.com
+.. _Mai Minh Tri: mailto:Tri.MaiMinh@vn.bosch.com
