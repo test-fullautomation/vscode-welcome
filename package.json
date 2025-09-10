@@ -2,7 +2,7 @@
     "name": "vscode-welcome",
     "displayName": "Robotframework AIO Welcome Page",
     "description": "A custom welcome page for Robotframework AIO in VSCodium",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "version-date": "06.2025",
     "publisher": "test-fullautomation",
     "author": {
@@ -17,7 +17,7 @@
     "activationEvents": [
         "onStartupFinished"
     ],
-    "main": "./extension.js",
+    "main": "./src/extension.js",
     "contributes": {
         "commands": [
             {
@@ -35,7 +35,7 @@
                 },
                 "robotframeworkWelcome.welcomeUrl": {
                     "type": "string",
-                    "default": "https://robotframework-aio.org/",
+                    "default": "./assets/index.html",
                     "description": "The URL to display in the Robotframework Welcome page. You can also set a local file path (e.g., file:///path/to/file.html)."
                 }
             }
