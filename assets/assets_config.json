@@ -2,7 +2,13 @@
    "images": [
       "assets/images/RobotFramework_AIO.ico"
    ],
-   "css": [],
-   "styles": [],
+   "css": [
+      "assets/styles/styles.css",
+      "assets/styles/bootstrap.min.css"
+   ],
+   "js": [
+      "assets/js/script.js",
+      "assets/js/bootstrap.bundle.min.js"
+   ],
    "html": []
 }

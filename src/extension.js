@@ -72,17 +72,65 @@ function activate(context) {
             }
 
             outputChannel.appendLine(panel.webview.html)
+            panel.webview.onDidReceiveMessage(async (message) => {
+                switch (message.command) {
+                    case 'openFileDialog':
+                        await openFileDialog();
+                        break;
+                    case 'openFolderDialog':
+                        await openFolderDialog();
+                        break;
+                    default:
+                        console.warn(`Unknown command: ${message.command}`);
+                }
+            });
+
             panel.onDidDispose(() => {
                 // Update the configuration to mark that the welcome has been seen
                 config.update('hasSeenWelcome', true, vscode.ConfigurationTarget.Global);
             }, null, context.subscriptions);
         });
-
+        // Automatically show the welcome page on activation
         vscode.commands.executeCommand('extension.showRobotframeworkWelcome');
 
         context.subscriptions.push(disposable);
     }
 }
+
+// Define the openFileDialog function
+async function openFileDialog() {
+    const options = {
+        canSelectMany: false,
+        openLabel: 'Open',
+        filters: {
+            'Text files': ['txt'],
+            'All files': ['*']
+        }
+    };
+
+    const fileUri = await vscode.window.showOpenDialog(options);
+    if (fileUri && fileUri[0]) {
+        const document = await vscode.workspace.openTextDocument(fileUri[0]); // Open the file as a text document
+        await vscode.window.showTextDocument(document); // Show the document in the editor
+    }
+}
+
+// Define the openFolderDialog function
+async function openFolderDialog() {
+    const folderUri = await vscode.window.showOpenDialog({
+        canSelectMany: false,
+        openLabel: 'Open Folder',
+        canSelectFolders: true,
+        canSelectFiles: false,
+        title: 'Open Folder'
+    });
+
+    if (folderUri && folderUri[0]) {
+        // This replaces the current workspace with the selected folder
+        vscode.commands.executeCommand('vscode.openFolder', folderUri[0], false);
+    }
+}
+
 outputChannel.show();
 module.exports = {
     activate
