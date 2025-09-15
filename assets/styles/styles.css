@@ -1,3 +1,9 @@
+html, body {
+   height: 100%;
+   margin: 0;
+   padding: 0;
+   overflow: hidden;
+}
 body {
    background-color: #1e1e1e;
    color: #d4d4d4;
@@ -64,4 +70,19 @@ body {
 }
 .tab-content {
    padding: 1.5rem;
+}
+
+@keyframes slideOutLeft {
+   from {
+     transform: translateX(0);
+     opacity: 1;
+   }
+   to {
+     transform: translateX(-100%);
+     opacity: 0;
+   }
+}
+
+.slide-out-left {
+   animation: slideOutLeft 0.5s forwards;
 }

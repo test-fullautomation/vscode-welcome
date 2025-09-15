@@ -21,6 +21,7 @@ function activate(context) {
                 vscode.ViewColumn.One,
                 {
                     enableScripts: true,
+                    retainContextWhenHidden: true,
                     localResourceRoots: (welcomeUrl.startsWith('http://') || welcomeUrl.startsWith('https://'))
                         ? []
                         : [vscode.Uri.file(path.dirname(path.join(context.extensionPath, welcomeUrl)))], // Allow local file access
@@ -33,10 +34,10 @@ function activate(context) {
                 // Check if the file exists
                 if (fs.existsSync(localFilePath)) {
                     // Read the file content and set it as the Webview's HTML
+                    outputChannel.append(localFilePath, 'utf8');
                     const fileContent = fs.readFileSync(localFilePath, 'utf8');
                     const assets = assetsManager.getAssets();
                     panel.webview.html = assetsManager.replaceAssets(panel.webview, context, fileContent, assets);
-                    // panel.webview.html = updatedContent;
                 } else {
                     vscode.window.showErrorMessage(`File not found: ${localFilePath}`);
                 }
@@ -66,19 +67,20 @@ function activate(context) {
                          <iframe src="${resolvedWelcomeUrl}"></iframe>
                      </body>
                      </html>`;
-                     outputChannel.appendLine(panel.webview.html)
             } else {
                 vscode.window.showErrorMessage('Invalid URL format for welcomeUrl.');
             }
 
-            outputChannel.appendLine(panel.webview.html)
             panel.webview.onDidReceiveMessage(async (message) => {
                 switch (message.command) {
                     case 'openFileDialog':
                         await openFileDialog();
                         break;
                     case 'openFolderDialog':
-                        await openFolderDialog();
+                        await openFolderDialog(context);
+                        break;
+                    case 'changeWebview':
+                        await loadWebviewContent(message, panel, context);
                         break;
                     default:
                         console.warn(`Unknown command: ${message.command}`);
@@ -97,7 +99,6 @@ function activate(context) {
     }
 }
 
-// Define the openFileDialog function
 async function openFileDialog() {
     const options = {
         canSelectMany: false,
@@ -110,13 +111,14 @@ async function openFileDialog() {
 
     const fileUri = await vscode.window.showOpenDialog(options);
     if (fileUri && fileUri[0]) {
-        const document = await vscode.workspace.openTextDocument(fileUri[0]); // Open the file as a text document
-        await vscode.window.showTextDocument(document); // Show the document in the editor
+        // Open the file as a text document
+        const document = await vscode.workspace.openTextDocument(fileUri[0]);
+         // Show the document in the editor
+        await vscode.window.showTextDocument(document);
     }
 }
 
-// Define the openFolderDialog function
-async function openFolderDialog() {
+async function openFolderDialog(context) {
     const folderUri = await vscode.window.showOpenDialog({
         canSelectMany: false,
         openLabel: 'Open Folder',
@@ -128,6 +130,28 @@ async function openFolderDialog() {
     if (folderUri && folderUri[0]) {
         // This replaces the current workspace with the selected folder
         vscode.commands.executeCommand('vscode.openFolder', folderUri[0], false);
+    }
+}
+
+async function loadWebviewContent(message, panel, context) {
+    try {
+        // Decode the URL
+        let decodedUrl = decodeURIComponent(message.name);
+
+        // Remove the prefix
+        let filePath = decodedUrl.replace("https://file+.vscode-resource.vscode-cdn.net/", "");
+
+        // Replace forward slashes with backslashes
+        filePath = filePath.replace(/\//g, "\\");
+
+        // Read the file asynchronously
+        const fileContent = await fs.promises.readFile(filePath, 'utf8');
+        const assets = assetsManager.getAssets();
+
+        // Replace assets and set the webview HTML
+        panel.webview.html = assetsManager.replaceAssets(panel.webview, context, fileContent, assets);
+    } catch (error) {
+        vscode.window.showErrorMessage(`Failed to load asset: ${error.message}`);
     }
 }
 

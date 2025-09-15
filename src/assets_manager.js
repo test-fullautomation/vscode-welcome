@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const vscode = require('vscode');
 const configPath = path.join(__dirname, '..', 'assets', 'assets_config.json');
-const outputChannel = vscode.window.createOutputChannel('Asset');
+
 function getAssets() {
     if (!fs.existsSync(configPath)) {
         throw new Error(`Assets configuration file not found: ${configPath}`);
@@ -48,7 +48,7 @@ function replaceAssets(webview, context, htmlContent, assets) {
 
     return htmlContent;
 }
-outputChannel.show();
+
 module.exports = {
     getAssets,
     replaceAssets

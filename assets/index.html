@@ -1,148 +1,108 @@
-<html lang="en"><head><script type="text/javascript">
-   var gk_isXlsx = false;
-   var gk_xlsxFileLookup = {};
-   var gk_fileData = {};
-   function filledCell(cell) {
-     return cell !== '' && cell != null;
-   }
-   function loadFileData(filename) {
-   if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-       try {
-           var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-           var firstSheetName = workbook.SheetNames[0];
-           var worksheet = workbook.Sheets[firstSheetName];
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-           // Convert sheet to JSON to filter blank rows
-           var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-           // Filter out blank rows (rows where all cells are empty, null, or undefined)
-           var filteredData = jsonData.filter(row => row.some(filledCell));
-
-           // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
-           var headerRowIndex = filteredData.findIndex((row, index) =>
-             row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
-           );
-           // Fallback
-           if (headerRowIndex === -1 || headerRowIndex > 25) {
-             headerRowIndex = 0;
-           }
-
-           // Convert filtered JSON back to CSV
-           var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
-           csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-           return csv;
-       } catch (e) {
-           console.error(e);
-           return "";
-       }
-   }
-   return gk_fileData[filename] || "";
-   }
-   </script>
-
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Welcome to RobotFramework AIO</title>
-<!-- Bootstrap CSS -->
-<link href="bootstrap.min.css" rel="stylesheet">
-<!-- Custom Styles -->
-<link href="styles.css" rel="stylesheet">
-</head>
+        <title>Welcome to RobotFramework AIO</title>
+        <!-- Bootstrap CSS -->
+        <link href="bootstrap.min.css" rel="stylesheet">
+        <!-- Custom Styles -->
+        <link href="styles.css" rel="stylesheet">
+    </head>
 <body>
-<div class="welcome-container container-fluid">
-   <!-- Header -->
-   <div class="welcome-header">
-    <img src="RobotFramework_AIO.ico" id="robotfw-aio-icon">
-       <h2>Welcome to RobotFramework AIO</h2>
-   </div>
+    <div class="welcome-container container-fluid">
+        <!-- Header -->
+        <div class="welcome-header">
+            <img src="RobotFramework_AIO.ico" id="robotfw-aio-icon">
+            <h2>Welcome to RobotFramework AIO</h2>
+        </div>
 
-   <!-- Tabs Navigation -->
-   <ul class="nav nav-tabs" id="welcomeTabs" role="tablist">
-       <li class="nav-item" role="presentation">
-           <button class="nav-link active" id="start-tab" data-bs-toggle="tab" data-bs-target="#start" type="button" role="tab" aria-selected="true">Start</button>
-       </li>
-       <li class="nav-item" role="presentation">
-           <button class="nav-link" id="recent-tab" data-bs-toggle="tab" data-bs-target="#recent" type="button" role="tab" aria-selected="false" tabindex="-1">Recent</button>
-       </li>
-       <li class="nav-item" role="presentation">
-           <button class="nav-link" id="customize-tab" data-bs-toggle="tab" data-bs-target="#customize" type="button" role="tab" aria-selected="false" tabindex="-1">Customize</button>
-       </li>
-   </ul>
+        <!-- Tabs Navigation -->
+        <ul class="nav nav-tabs" id="welcomeTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="start-tab" data-bs-toggle="tab" data-bs-target="#start" type="button" role="tab" aria-selected="true">Start</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="recent-tab" data-bs-toggle="tab" data-bs-target="#recent" type="button" role="tab" aria-selected="false" tabindex="-1">Recent</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="customize-tab" data-bs-toggle="tab" data-bs-target="#customize" type="button" role="tab" aria-selected="false" tabindex="-1">Customize</button>
+            </li>
+        </ul>
 
-   <!-- Tab Content -->
-   <div class="tab-content" id="welcomeTabContent">
-       <!-- Start Tab -->
-       <div class="tab-pane fade active show" id="start" role="tabpanel" aria-labelledby="start-tab">
-           <h4>Get Started</h4>
-           <ul class="list-group mt-3">
-               <li class="list-group-item">
-                   <a href="#" onclick="openFileDialog()">Open File</a>
-                   <p class="mb-0 small">Start with a new file for your project.</p>
-               </li>
-               <li class="list-group-item">
-                   <a href="#" onclick="openFolderDialog()">Open Folder</a>
-                   <p class="mb-0 small">Open a folder to work on your project.</p>
-               </li>
-               <li class="list-group-item">
-                   <a href="#">Get Started Tutorial</a>
-                   <p class="mb-0 small">Learn the basics of VS Code.</p>
-               </li>
-               <li class="list-group-item">
-                   <a href="#">Setup for your language</a>
-                   <p class="mb-0 small">Configure VS Code for Python, JavaScript, and more.</p>
-               </li>
-           </ul>
-       </div>
+        <!-- Tab Content -->
+        <div class="tab-content" id="welcomeTabContent">
+            <!-- Start Tab -->
+            <div class="tab-pane fade active show" id="start" role="tabpanel" aria-labelledby="start-tab">
+                <h4>Get Started</h4>
+                <ul class="list-group mt-3">
+                    <li class="list-group-item">
+                        <a href="#" onclick="openFileDialog()">Open File</a>
+                        <p class="mb-0 small">Start with a new file for your project.</p>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="#" onclick="openFolderDialog()">Open Folder</a>
+                        <p class="mb-0 small">Open a folder to work on your project.</p>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="#" onclick="changeWebview('started.html')">Get Started Tutorial</a>
+                        <p class="mb-0 small">Learn the basics of VS Code.</p>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="https://robotframework-aio.org/">Visit our website</a>
+                        <p class="mb-0 small">https://robotframework-aio.org/</p>
+                    </li>
+                </ul>
+            </div>
 
-       <!-- Recent Tab -->
-       <div class="tab-pane fade" id="recent" role="tabpanel" aria-labelledby="recent-tab">
-           <h4>Recent</h4>
-           <ul class="list-group mt-3">
-               <li class="list-group-item">
-                   <a href="#">Project XYZ</a>
-                   <p class="mb-0 small">/home/user/projects/xyz</p>
-               </li>
-               <li class="list-group-item">
-                   <a href="#">My Web Project</a>
-                   <p class="mb-0 small">/home/user/webproject</p>
-               </li>
-               <li class="list-group-item">
-                   <a href="#">Show All...</a>
-                   <p class="mb-0 small">View all recently opened files and folders.</p>
-               </li>
-           </ul>
-       </div>
+            <!-- Recent Tab -->
+            <div class="tab-pane fade" id="recent" role="tabpanel" aria-labelledby="recent-tab">
+                <h4>Recent</h4>
+                <ul class="list-group mt-3">
+                    <li class="list-group-item">
+                        <a href="#">Project XYZ</a>
+                        <p class="mb-0 small">/home/user/projects/xyz</p>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="#">My Web Project</a>
+                        <p class="mb-0 small">/home/user/webproject</p>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="#">Show All...</a>
+                        <p class="mb-0 small">View all recently opened files and folders.</p>
+                    </li>
+                </ul>
+            </div>
 
-       <!-- Customize Tab -->
-       <div class="tab-pane fade" id="customize" role="tabpanel" aria-labelledby="customize-tab">
-           <h4>Customize</h4>
-           <ul class="list-group mt-3">
-               <li class="list-group-item">
-                   <a href="#">Themes</a>
-                   <p class="mb-0 small">Customize the look with dark or light themes.</p>
-               </li>
-               <li class="list-group-item">
-                   <a href="#">Extensions</a>
-                   <p class="mb-0 small">Enhance VS Code with plugins from the Marketplace.</p>
-               </li>
-               <li class="list-group-item">
-                   <a href="#">Keyboard Shortcuts</a>
-                   <p class="mb-0 small">Customize shortcuts for faster workflows.</p>
-               </li>
-           </ul>
-       </div>
-   </div>
+            <!-- Customize Tab -->
+            <div class="tab-pane fade" id="customize" role="tabpanel" aria-labelledby="customize-tab">
+                <h4>Customize</h4>
+                <ul class="list-group mt-3">
+                    <li class="list-group-item">
+                        <a href="#">Themes</a>
+                        <p class="mb-0 small">Customize the look with dark or light themes.</p>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="#">Extensions</a>
+                        <p class="mb-0 small">Enhance VS Code with plugins from the Marketplace.</p>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="#">Keyboard Shortcuts</a>
+                        <p class="mb-0 small">Customize shortcuts for faster workflows.</p>
+                    </li>
+                </ul>
+            </div>
+        </div>
 
-   <!-- Footer Links -->
-   <div class="mt-4 text-center">
-       <a href="#" class="text-muted small me-3">Documentation</a>
-       <a href="#" class="text-muted small me-3">Give Feedback</a>
-       <a href="#" class="text-muted small">VS Code Updates</a>
-   </div>
-</div>
+        <!-- Footer Links -->
+        <div class="mt-4 text-center">
+            <a href="#" class="text-muted small me-3">Documentation</a>
+            <a href="#" class="text-muted small me-3">Give Feedback</a>
+            <a href="#" class="text-muted small">VS Code Updates</a>
+        </div>
+    </div>
 
-<!-- Bootstrap JS -->
-<script src="bootstrap.bundle.min.js"></script>
-<script src="script.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
 </body></html>

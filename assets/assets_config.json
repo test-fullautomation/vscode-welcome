@@ -10,5 +10,7 @@
       "assets/js/script.js",
       "assets/js/bootstrap.bundle.min.js"
    ],
-   "html": []
+   "html": [
+      "assets/html/started.html"
+   ]
 }

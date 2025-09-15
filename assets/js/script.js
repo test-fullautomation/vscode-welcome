@@ -50,3 +50,15 @@ function openFileDialog() {
 function openFolderDialog() {
    vscode.postMessage({ command: 'openFolderDialog' });
 }
+
+function changeWebview(webviewName) {
+   document.body.classList.add('slide-out-left');
+   setTimeout(() => {
+      vscode.postMessage({ command: 'changeWebview', name: webviewName });
+   }, 300);
+}
+// function
+
+// module.exports = {
+//    activate
+// };
