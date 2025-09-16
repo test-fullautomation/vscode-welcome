@@ -23,7 +23,7 @@
                 <button class="nav-link active" id="start-tab" data-bs-toggle="tab" data-bs-target="#start" type="button" role="tab" aria-selected="true">Start</button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="recent-tab" data-bs-toggle="tab" data-bs-target="#recent" type="button" role="tab" aria-selected="false" tabindex="-1">Recent</button>
+                <button class="nav-link" id="useful-tab" data-bs-toggle="tab" data-bs-target="#recent" type="button" role="tab" aria-selected="false" tabindex="-1">Recent</button>
             </li>
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="customize-tab" data-bs-toggle="tab" data-bs-target="#customize" type="button" role="tab" aria-selected="false" tabindex="-1">Customize</button>
@@ -56,20 +56,16 @@
             </div>
 
             <!-- Recent Tab -->
-            <div class="tab-pane fade" id="recent" role="tabpanel" aria-labelledby="recent-tab">
-                <h4>Recent</h4>
+            <div class="tab-pane fade" id="recent" role="tabpanel" aria-labelledby="useful-tab">
+                <h4>Useful Path</h4>
                 <ul class="list-group mt-3">
                     <li class="list-group-item">
-                        <a href="#">Project XYZ</a>
-                        <p class="mb-0 small">/home/user/projects/xyz</p>
+                        <a href="#" onclick="openSelectedFolder(this.nextElementSibling.textContent.trim())">Robot Test</a>
+                        <p class="mb-0 small">ROBOTTESTPATH</p>
                     </li>
                     <li class="list-group-item">
-                        <a href="#">My Web Project</a>
-                        <p class="mb-0 small">/home/user/webproject</p>
-                    </li>
-                    <li class="list-group-item">
-                        <a href="#">Show All...</a>
-                        <p class="mb-0 small">View all recently opened files and folders.</p>
+                        <a href="#" onclick="openSelectedFolder(this.nextElementSibling.textContent.trim())">Robot Python Path</a>
+                        <p class="mb-0 small">ROBOTPYTHONPATH</p>
                     </li>
                 </ul>
             </div>

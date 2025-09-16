@@ -57,6 +57,10 @@ function changeWebview(webviewName) {
       vscode.postMessage({ command: 'changeWebview', name: webviewName });
    }, 300);
 }
+
+function openSelectedFolder(uri) {
+   vscode.postMessage({ command: 'openSelectedFolder', uri: uri });
+}
 // function
 
 // module.exports = {

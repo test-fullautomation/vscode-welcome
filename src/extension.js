@@ -55,7 +55,8 @@ function showWelcomePage(context, welcomeUrl) {
         if (fs.existsSync(localFilePath)) {
             // Read the file content and set it as the Webview's HTML
             outputChannel.append(localFilePath, 'utf8');
-            const fileContent = fs.readFileSync(localFilePath, 'utf8');
+            let fileContent = fs.readFileSync(localFilePath, 'utf8');
+            fileContent = loadResources(fileContent)
             const assets = assetsManager.getAssets();
             panel.webview.html = assetsManager.replaceAssets(panel.webview, context, fileContent, assets);
         } else {
@@ -102,6 +103,9 @@ function showWelcomePage(context, welcomeUrl) {
             case 'changeWebview':
                 await loadWebviewContent(message, panel, context);
                 break;
+            case 'openSelectedFolder':
+                await openSelectedFolder(message);
+                break;
             default:
                 console.warn(`Unknown command: ${message.command}`);
         }
@@ -111,6 +115,27 @@ function showWelcomePage(context, welcomeUrl) {
         // Update the configuration to mark that the welcome has been seen
         config.update('hasSeenWelcome', true, vscode.ConfigurationTarget.Global);
     }, null, context.subscriptions);
+}
+
+function loadResources(htmlContent) {
+    // Replace environment variables in the HTML content
+    let resources = ['ROBOTTESTPATH', 'ROBOTPYTHONPATH']
+    outputChannel.append(htmlContent)
+    resources.forEach(resource => {
+        const value = process.env[resource];
+        htmlContent = htmlContent.replaceAll(resource, value);
+    });
+    outputChannel.append(htmlContent)
+    return htmlContent
+}
+
+async function openSelectedFolder(message) {
+    try {
+        const folderPath = vscode.Uri.file(message.uri)
+        await vscode.commands.executeCommand('vscode.openFolder', folderPath, false);
+    } catch (error) {
+        vscode.window.showErrorMessage(`Failed to open folder: ${error.message}`);
+    }
 }
 
 async function openFileDialog() {
@@ -127,7 +152,7 @@ async function openFileDialog() {
     if (fileUri && fileUri[0]) {
         // Open the file as a text document
         const document = await vscode.workspace.openTextDocument(fileUri[0]);
-         // Show the document in the editor
+        // Show the document in the editor
         await vscode.window.showTextDocument(document);
     }
 }
