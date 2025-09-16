@@ -9,94 +9,108 @@ function activate(context) {
     const hasSeenWelcome = config.get('hasSeenWelcome', false);
     const welcomeUrl = config.get('welcomeUrl', 'https://robotframework-aio.org/');
 
+    // Register a command to show the welcome page
+    const showWelcomeCommand = vscode.commands.registerCommand('extension.showRobotframeworkWelcome', () => {
+        showWelcomePage(context, welcomeUrl);
+    });
+
+    // Add a status bar button to toggle the welcome page
+    const welcomeButton = vscode.window.createStatusBarItem(vscode.StatusBarAlignment, 100);
+    welcomeButton.text = '$(home) Welcome';
+    welcomeButton.tooltip = 'Reopen the Welcome Page';
+    welcomeButton.command = 'extension.showRobotframeworkWelcome';
+    welcomeButton.show();
+
+    // Add the button and command to the context subscriptions
+    context.subscriptions.push(showWelcomeCommand, welcomeButton);
+
     if (!hasSeenWelcome) {
-        let disposable = vscode.commands.registerCommand('extension.showRobotframeworkWelcome', () => {
-            const resolvedWelcomeUrl = welcomeUrl.startsWith('http://') || welcomeUrl.startsWith('https://')
-                ? welcomeUrl
-                : vscode.Uri.file(path.join(context.extensionPath, welcomeUrl)).toString();
-
-            const panel = vscode.window.createWebviewPanel(
-                'robotframeworkWelcome',
-                'Welcome to Robotframework AIO',
-                vscode.ViewColumn.One,
-                {
-                    enableScripts: true,
-                    retainContextWhenHidden: true,
-                    localResourceRoots: (welcomeUrl.startsWith('http://') || welcomeUrl.startsWith('https://'))
-                        ? []
-                        : [vscode.Uri.file(path.dirname(path.join(context.extensionPath, welcomeUrl)))], // Allow local file access
-                }
-            );
-
-            if (resolvedWelcomeUrl.startsWith('file://')) {
-                // Convert the file URI to a local file path
-                const localFilePath = vscode.Uri.parse(resolvedWelcomeUrl).fsPath;
-                // Check if the file exists
-                if (fs.existsSync(localFilePath)) {
-                    // Read the file content and set it as the Webview's HTML
-                    outputChannel.append(localFilePath, 'utf8');
-                    const fileContent = fs.readFileSync(localFilePath, 'utf8');
-                    const assets = assetsManager.getAssets();
-                    panel.webview.html = assetsManager.replaceAssets(panel.webview, context, fileContent, assets);
-                } else {
-                    vscode.window.showErrorMessage(`File not found: ${localFilePath}`);
-                }
-            } else if (resolvedWelcomeUrl.startsWith('http://') || resolvedWelcomeUrl.startsWith('https://')) {
-                // For HTTP/HTTPS URLs, set the Webview's HTML to load the URL
-                panel.webview.html = `
-                     <!DOCTYPE html>
-                     <html lang="en">
-                     <head>
-                         <meta charset="UTF-8">
-                         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                         <title>Robotframework AIO</title>
-                         <style>
-                             body {
-                                 margin: 0;
-                                 padding: 0;
-                                 overflow: hidden;
-                             }
-                             iframe {
-                                 width: 100%;
-                                 height: 100vh;
-                                 border: none;
-                             }
-                         </style>
-                     </head>
-                     <body>
-                         <iframe src="${resolvedWelcomeUrl}"></iframe>
-                     </body>
-                     </html>`;
-            } else {
-                vscode.window.showErrorMessage('Invalid URL format for welcomeUrl.');
-            }
-
-            panel.webview.onDidReceiveMessage(async (message) => {
-                switch (message.command) {
-                    case 'openFileDialog':
-                        await openFileDialog();
-                        break;
-                    case 'openFolderDialog':
-                        await openFolderDialog(context);
-                        break;
-                    case 'changeWebview':
-                        await loadWebviewContent(message, panel, context);
-                        break;
-                    default:
-                        console.warn(`Unknown command: ${message.command}`);
-                }
-            });
-
-            panel.onDidDispose(() => {
-                // Update the configuration to mark that the welcome has been seen
-                config.update('hasSeenWelcome', true, vscode.ConfigurationTarget.Global);
-            }, null, context.subscriptions);
-        });
-        // Automatically show the welcome page on activation
         vscode.commands.executeCommand('extension.showRobotframeworkWelcome');
-
-        context.subscriptions.push(disposable);
+        config.update('hasSeenWelcome', true, vscode.ConfigurationTarget.Global);
     }
+}
+
+function showWelcomePage(context, welcomeUrl) {
+    const resolvedWelcomeUrl = welcomeUrl.startsWith('http://') || welcomeUrl.startsWith('https://')
+        ? welcomeUrl
+        : vscode.Uri.file(path.join(context.extensionPath, welcomeUrl)).toString();
+
+    const panel = vscode.window.createWebviewPanel(
+        'robotframeworkWelcome',
+        'Welcome to Robotframework AIO',
+        vscode.ViewColumn.One,
+        {
+            enableScripts: true,
+            retainContextWhenHidden: true,
+            localResourceRoots: (welcomeUrl.startsWith('http://') || welcomeUrl.startsWith('https://'))
+                ? []
+                : [vscode.Uri.file(path.dirname(path.join(context.extensionPath, welcomeUrl)))], // Allow local file access
+        }
+    );
+
+    if (resolvedWelcomeUrl.startsWith('file://')) {
+        // Convert the file URI to a local file path
+        const localFilePath = vscode.Uri.parse(resolvedWelcomeUrl).fsPath;
+        // Check if the file exists
+        if (fs.existsSync(localFilePath)) {
+            // Read the file content and set it as the Webview's HTML
+            outputChannel.append(localFilePath, 'utf8');
+            const fileContent = fs.readFileSync(localFilePath, 'utf8');
+            const assets = assetsManager.getAssets();
+            panel.webview.html = assetsManager.replaceAssets(panel.webview, context, fileContent, assets);
+        } else {
+            vscode.window.showErrorMessage(`File not found: ${localFilePath}`);
+        }
+    } else if (resolvedWelcomeUrl.startsWith('http://') || resolvedWelcomeUrl.startsWith('https://')) {
+        // For HTTP/HTTPS URLs, set the Webview's HTML to load the URL
+        panel.webview.html = `
+             <!DOCTYPE html>
+             <html lang="en">
+             <head>
+                 <meta charset="UTF-8">
+                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                 <title>Robotframework AIO</title>
+                 <style>
+                     body {
+                         margin: 0;
+                         padding: 0;
+                         overflow: hidden;
+                     }
+                     iframe {
+                         width: 100%;
+                         height: 100vh;
+                         border: none;
+                     }
+                 </style>
+             </head>
+             <body>
+                 <iframe src="${resolvedWelcomeUrl}"></iframe>
+             </body>
+             </html>`;
+    } else {
+        vscode.window.showErrorMessage('Invalid URL format for welcomeUrl.');
+    }
+
+    panel.webview.onDidReceiveMessage(async (message) => {
+        switch (message.command) {
+            case 'openFileDialog':
+                await openFileDialog();
+                break;
+            case 'openFolderDialog':
+                await openFolderDialog(context);
+                break;
+            case 'changeWebview':
+                await loadWebviewContent(message, panel, context);
+                break;
+            default:
+                console.warn(`Unknown command: ${message.command}`);
+        }
+    });
+
+    panel.onDidDispose(() => {
+        // Update the configuration to mark that the welcome has been seen
+        config.update('hasSeenWelcome', true, vscode.ConfigurationTarget.Global);
+    }, null, context.subscriptions);
 }
 
 async function openFileDialog() {
