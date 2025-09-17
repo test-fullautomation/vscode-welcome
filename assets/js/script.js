@@ -61,6 +61,10 @@ function changeWebview(webviewName) {
 function openSelectedFolder(uri) {
    vscode.postMessage({ command: 'openSelectedFolder', uri: uri });
 }
+
+function openRobotTestWorkspace() {
+   vscode.postMessage({ command: 'openRobotTestWorkspace' });
+}
 // function
 
 // module.exports = {

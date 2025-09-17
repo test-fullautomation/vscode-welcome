@@ -110,6 +110,9 @@ function showWelcomePage(context, welcomeUrl) {
             case 'openSelectedFolder':
                 await openSelectedFolder(message);
                 break;
+            case 'openRobotTestWorkspace':
+                await openRobotTestWorkspace();
+                break;
             default:
                 console.warn(`Unknown command: ${message.command}`);
         }
@@ -125,13 +128,37 @@ function showWelcomePage(context, welcomeUrl) {
 function loadResources(htmlContent) {
     // Replace environment variables in the HTML content
     let resources = ['ROBOTTESTPATH', 'ROBOTPYTHONPATH']
-    outputChannel.append(htmlContent)
+
     resources.forEach(resource => {
         const value = process.env[resource];
         htmlContent = htmlContent.replaceAll(resource, value);
     });
     outputChannel.append(htmlContent)
     return htmlContent
+}
+
+async function openRobotTestWorkspace() {
+    try {
+        let workspacePath = process.env['ROBOTTESTPATH'];
+        workspacePath = path.join(workspacePath, 'RobotTest.code-workspace');
+
+        // Show a confirmation dialog
+        const userChoice = await vscode.window.showInformationMessage(
+            'Do you want to open the RobotTest workspace?',
+            { modal: true }, // Makes the dialog modal
+            'Yes',
+            'No'
+        );
+
+        // Check the user's choice
+        if (userChoice === 'Yes') {
+            openSelectedFolder({ uri: workspacePath });
+        } else {
+            vscode.window.showInformationMessage('Operation canceled.');
+        }
+    } catch (error) {
+        vscode.window.showErrorMessage(`An error occurred: ${error.message}`);
+    }
 }
 
 async function openSelectedFolder(message) {
@@ -184,12 +211,13 @@ async function loadWebviewContent(message, panel, context) {
 
         // Remove the prefix
         let filePath = decodedUrl.replace("https://file+.vscode-resource.vscode-cdn.net/", "");
-        outputChannel.append(filePath)
+
         // Replace forward slashes with backslashes
         filePath = filePath.replace(/\//g, "\\");
 
         // Read the file asynchronously
-        const fileContent = await fs.promises.readFile(filePath, 'utf8');
+        let fileContent = await fs.promises.readFile(filePath, 'utf8');
+        fileContent = loadResources(fileContent)
         const assets = assetsManager.getAssets();
 
         // Replace assets and set the webview HTML
