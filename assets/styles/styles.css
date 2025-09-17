@@ -86,3 +86,19 @@ body {
 .slide-out-left {
    animation: slideOutLeft 0.5s forwards;
 }
+
+.welcome-button {
+   background-color: #252526;
+   color: #1DA1F2;
+   padding: 10px 20px;
+   border: none;
+   border-radius: 5px;
+   font-size: 14px;
+   cursor: pointer;
+   display: flex;
+   align-items: center;
+   gap: 10px;
+ }
+ .welcome-button::before {
+   content: "<";
+ }

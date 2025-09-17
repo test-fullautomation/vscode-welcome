@@ -11,6 +11,7 @@
       "assets/js/bootstrap.bundle.min.js"
    ],
    "html": [
-      "assets/html/started.html"
+      "assets/html/started.html",
+      "assets/index.html"
    ]
 }

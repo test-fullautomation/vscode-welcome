@@ -3,6 +3,7 @@ const path = require('path');
 const fs = require('fs');
 const assetsManager = require('./assets_manager.js');
 const outputChannel = vscode.window.createOutputChannel('Asset Manager');
+let isWelcomePageOpen = false;
 
 function activate(context) {
     const config = vscode.workspace.getConfiguration('robotframeworkWelcome');
@@ -11,7 +12,10 @@ function activate(context) {
 
     // Register a command to show the welcome page
     const showWelcomeCommand = vscode.commands.registerCommand('extension.showRobotframeworkWelcome', () => {
-        showWelcomePage(context, welcomeUrl);
+        if (!isWelcomePageOpen) {
+            isWelcomePageOpen = true;
+            showWelcomePage(context, welcomeUrl);
+        }
     });
 
     // Add a status bar button to toggle the welcome page
@@ -113,6 +117,7 @@ function showWelcomePage(context, welcomeUrl) {
 
     panel.onDidDispose(() => {
         // Update the configuration to mark that the welcome has been seen
+        isWelcomePageOpen = false
         config.update('hasSeenWelcome', true, vscode.ConfigurationTarget.Global);
     }, null, context.subscriptions);
 }
@@ -179,7 +184,7 @@ async function loadWebviewContent(message, panel, context) {
 
         // Remove the prefix
         let filePath = decodedUrl.replace("https://file+.vscode-resource.vscode-cdn.net/", "");
-
+        outputChannel.append(filePath)
         // Replace forward slashes with backslashes
         filePath = filePath.replace(/\//g, "\\");
 
