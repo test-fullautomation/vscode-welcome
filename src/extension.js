@@ -3,30 +3,63 @@ const path = require('path');
 const fs = require('fs');
 const assetsManager = require('./assets_manager.js');
 const outputChannel = vscode.window.createOutputChannel('Asset Manager');
+
+const config = vscode.workspace.getConfiguration('robotframeworkWelcome');
 let isWelcomePageOpen = false;
 
-function activate(context) {
-    const config = vscode.workspace.getConfiguration('robotframeworkWelcome');
-    const hasSeenWelcome = config.get('hasSeenWelcome', false);
-    const welcomeUrl = config.get('welcomeUrl', 'https://robotframework-aio.org/');
+function handleWelcomeUrl(context, config = vscode.workspace.getConfiguration('robotframeworkWelcome')) {
+    try {
+        const welcomeUrl = config.get('welcomeUrl', './assets/index.html/');
+        const resolvedWelcomeUrl = welcomeUrl.startsWith('http://') || welcomeUrl.startsWith('https://')
+        ? welcomeUrl
+        : vscode.Uri.file(path.join(context.extensionPath, welcomeUrl)).toString();
 
-    // Register a command to show the welcome page
-    const showWelcomeCommand = vscode.commands.registerCommand('extension.showRobotframeworkWelcome', () => {
-        if (!isWelcomePageOpen) {
-            isWelcomePageOpen = true;
-            showWelcomePage(context, welcomeUrl);
-        }
-    });
+        return resolvedWelcomeUrl
+    }
+    catch (error) {
+        vscode.window.showErrorMessage(`Error handling welcomeUrl: ${error.message}`);
+    }
+}
 
-    // Add a status bar button to toggle the welcome page
+// Add a status bar button to toggle the welcome page
+function createWelcomeButton() {
     const welcomeButton = vscode.window.createStatusBarItem(vscode.StatusBarAlignment, 100);
     welcomeButton.text = '$(home) Welcome';
     welcomeButton.tooltip = 'Reopen the Welcome Page';
     welcomeButton.command = 'extension.showRobotframeworkWelcome';
     welcomeButton.show();
 
+    return welcomeButton;
+}
+
+function activate(context) {
+    const hasSeenWelcome = config.get('hasSeenWelcome', false);
+
+    // Register a command to show the welcome page
+    const showWelcomeCommand = vscode.commands.registerCommand('extension.showRobotframeworkWelcome', () => {
+        if (!isWelcomePageOpen) {
+            isWelcomePageOpen = true;
+            showWelcomePage(context);
+        }
+    });
+
+    // Add a status bar button to toggle the welcome page
+    const welcomeButton = createWelcomeButton()
+
     // Add the button and command to the context subscriptions
-    context.subscriptions.push(showWelcomeCommand, welcomeButton);
+    context.subscriptions.push(showWelcomeCommand, welcomeButton, vscode.workspace.onDidChangeConfiguration((event) => {
+        const config = vscode.workspace.getConfiguration('robotframeworkWelcome');
+        const welcomeUrl = handleWelcomeUrl(context) // Default to './assets/index.html' if not set
+        if (event.affectsConfiguration('robotframeworkWelcome.welcomeUrl')) {
+            // Get the updated configuration
+
+            // Log the updated configuration (optional for debugging)
+            outputChannel.appendLine(`Updated welcomeUrl: ${welcomeUrl}`);
+        
+            // Update the webview with the new configuration
+            showWelcomePage(context, welcomeUrl);
+        }
+    }));
 
     if (!hasSeenWelcome) {
         vscode.commands.executeCommand('extension.showRobotframeworkWelcome');
@@ -34,10 +67,14 @@ function activate(context) {
     }
 }
 
-function showWelcomePage(context, welcomeUrl) {
-    const resolvedWelcomeUrl = welcomeUrl.startsWith('http://') || welcomeUrl.startsWith('https://')
-        ? welcomeUrl
-        : vscode.Uri.file(path.join(context.extensionPath, welcomeUrl)).toString();
+function showWelcomePage(context) {
+    const resolvedWelcomeUrl = handleWelcomeUrl(context);
+    const isRemoteUrl = resolvedWelcomeUrl.startsWith('http://') || resolvedWelcomeUrl.startsWith('https://');
+    
+    // Precompute the localResourceRoots based on resolvedWelcomeUrl
+    const localResourceRoots = isRemoteUrl
+        ? []
+        : [vscode.Uri.file(path.dirname(vscode.Uri.parse(resolvedWelcomeUrl).fsPath))];
 
     const panel = vscode.window.createWebviewPanel(
         'robotframeworkWelcome',
@@ -46,19 +83,42 @@ function showWelcomePage(context, welcomeUrl) {
         {
             enableScripts: true,
             retainContextWhenHidden: true,
-            localResourceRoots: (welcomeUrl.startsWith('http://') || welcomeUrl.startsWith('https://'))
-                ? []
-                : [vscode.Uri.file(path.dirname(path.join(context.extensionPath, welcomeUrl)))], // Allow local file access
+            localResourceRoots: localResourceRoots // Allow local file access
         }
     );
 
-    if (resolvedWelcomeUrl.startsWith('file://')) {
+    if (isRemoteUrl) {
+        panel.webview.html = `
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Robotframework AIO</title>
+                <style>
+                    body {
+                        margin: 0;
+                        padding: 0;
+                        overflow: hidden;
+                    }
+                    iframe {
+                        width: 100%;
+                        height: 100vh;
+                        border: none;
+                    }
+                </style>
+            </head>
+            <body>
+                <iframe src="${resolvedWelcomeUrl}"></iframe>
+            </body>
+            </html>`;
+    }
+    else {
         // Convert the file URI to a local file path
         const localFilePath = vscode.Uri.parse(resolvedWelcomeUrl).fsPath;
         // Check if the file exists
         if (fs.existsSync(localFilePath)) {
             // Read the file content and set it as the Webview's HTML
-            outputChannel.append(localFilePath, 'utf8');
             let fileContent = fs.readFileSync(localFilePath, 'utf8');
             fileContent = loadResources(fileContent)
             const assets = assetsManager.getAssets();
@@ -66,34 +126,6 @@ function showWelcomePage(context, welcomeUrl) {
         } else {
             vscode.window.showErrorMessage(`File not found: ${localFilePath}`);
         }
-    } else if (resolvedWelcomeUrl.startsWith('http://') || resolvedWelcomeUrl.startsWith('https://')) {
-        // For HTTP/HTTPS URLs, set the Webview's HTML to load the URL
-        panel.webview.html = `
-             <!DOCTYPE html>
-             <html lang="en">
-             <head>
-                 <meta charset="UTF-8">
-                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                 <title>Robotframework AIO</title>
-                 <style>
-                     body {
-                         margin: 0;
-                         padding: 0;
-                         overflow: hidden;
-                     }
-                     iframe {
-                         width: 100%;
-                         height: 100vh;
-                         border: none;
-                     }
-                 </style>
-             </head>
-             <body>
-                 <iframe src="${resolvedWelcomeUrl}"></iframe>
-             </body>
-             </html>`;
-    } else {
-        vscode.window.showErrorMessage('Invalid URL format for welcomeUrl.');
     }
 
     panel.webview.onDidReceiveMessage(async (message) => {
@@ -133,7 +165,7 @@ function loadResources(htmlContent) {
         const value = process.env[resource];
         htmlContent = htmlContent.replaceAll(resource, value);
     });
-    outputChannel.append(htmlContent)
+
     return htmlContent
 }
 
