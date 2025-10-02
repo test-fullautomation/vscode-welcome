@@ -4,15 +4,18 @@ const fs = require('fs');
 const assetsManager = require('./assets_manager.js');
 const outputChannel = vscode.window.createOutputChannel('Asset Manager');
 
-const config = vscode.workspace.getConfiguration('robotframeworkWelcome');
 let isWelcomePageOpen = false;
 
 function handleWelcomeUrl(context, config = vscode.workspace.getConfiguration('robotframeworkWelcome')) {
     try {
         const welcomeUrl = config.get('welcomeUrl', './assets/index.html/');
-        const resolvedWelcomeUrl = welcomeUrl.startsWith('http://') || welcomeUrl.startsWith('https://')
-        ? welcomeUrl
-        : vscode.Uri.file(path.join(context.extensionPath, welcomeUrl)).toString();
+        let resolvedWelcomeUrl = ""
+
+        if (welcomeUrl.startsWith('http://') || welcomeUrl.startsWith('https://') || welcomeUrl.startsWith("file://")) {
+            resolvedWelcomeUrl = welcomeUrl;
+        } else {
+            resolvedWelcomeUrl = vscode.Uri.file(path.join(context.extensionPath, welcomeUrl)).toString();
+        }
 
         return resolvedWelcomeUrl
     }
@@ -33,6 +36,7 @@ function createWelcomeButton() {
 }
 
 function activate(context) {
+    const config = vscode.workspace.getConfiguration('robotframeworkWelcome');
     const hasSeenWelcome = config.get('hasSeenWelcome', false);
 
     // Register a command to show the welcome page
@@ -48,16 +52,10 @@ function activate(context) {
 
     // Add the button and command to the context subscriptions
     context.subscriptions.push(showWelcomeCommand, welcomeButton, vscode.workspace.onDidChangeConfiguration((event) => {
-        const config = vscode.workspace.getConfiguration('robotframeworkWelcome');
-        const welcomeUrl = handleWelcomeUrl(context) // Default to './assets/index.html' if not set
         if (event.affectsConfiguration('robotframeworkWelcome.welcomeUrl')) {
-            // Get the updated configuration
-
-            // Log the updated configuration (optional for debugging)
-            outputChannel.appendLine(`Updated welcomeUrl: ${welcomeUrl}`);
-        
             // Update the webview with the new configuration
-            showWelcomePage(context, welcomeUrl);
+            const config = vscode.workspace.getConfiguration('robotframeworkWelcome');
+            showWelcomePage(context, config);
         }
     }));
 
@@ -67,7 +65,7 @@ function activate(context) {
     }
 }
 
-function showWelcomePage(context) {
+function showWelcomePage(context, config = vscode.workspace.getConfiguration('robotframeworkWelcome')) {
     const resolvedWelcomeUrl = handleWelcomeUrl(context);
     const isRemoteUrl = resolvedWelcomeUrl.startsWith('http://') || resolvedWelcomeUrl.startsWith('https://');
     
@@ -119,9 +117,26 @@ function showWelcomePage(context) {
         // Check if the file exists
         if (fs.existsSync(localFilePath)) {
             // Read the file content and set it as the Webview's HTML
+            const regexDefaultLocalPath = /test-fullautomation\.vscode-welcome-\d+\.\d+\.\d+\\assets\\index\.html\\?$/;
+            const isDefaultWelcomePage = regexDefaultLocalPath.test(localFilePath)
+            let assets = null
+
+            if (isDefaultWelcomePage) {
+                outputChannel.appendLine('Using the default welcome page from the extension assets.')
+                assets = assetsManager.getAssets();
+                outputChannel.appendLine(`Assets: ${assets.img}`)
+            } else {
+                outputChannel.appendLine('Using a custom welcome page from the user configuration.')
+                config = vscode.workspace.getConfiguration('robotframeworkWelcome');
+                assets = {
+                    css: config.get('css', []),
+                    js: config.get('js', []),
+                    img: config.get('img', []),
+                    html: config.get('html', [])
+                }
+                outputChannel.appendLine(`Assets: ${assets.img}`)
+            }
             let fileContent = fs.readFileSync(localFilePath, 'utf8');
-            fileContent = loadResources(fileContent)
-            const assets = assetsManager.getAssets();
             panel.webview.html = assetsManager.replaceAssets(panel.webview, context, fileContent, assets);
         } else {
             vscode.window.showErrorMessage(`File not found: ${localFilePath}`);
@@ -249,7 +264,6 @@ async function loadWebviewContent(message, panel, context) {
 
         // Read the file asynchronously
         let fileContent = await fs.promises.readFile(filePath, 'utf8');
-        fileContent = loadResources(fileContent)
         const assets = assetsManager.getAssets();
 
         // Replace assets and set the webview HTML
