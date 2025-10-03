@@ -3,19 +3,18 @@ const path = require('path');
 const fs = require('fs');
 const assetsManager = require('./assets_manager.js');
 const outputChannel = vscode.window.createOutputChannel('Asset Manager');
+import constants from './constants.js';
 
 let isWelcomePageOpen = false;
 
 function handleWelcomeUrl(context, config = vscode.workspace.getConfiguration('robotframeworkWelcome')) {
     try {
-        const welcomeUrl = config.get('welcomeUrl', './assets/index.html/');
-        let resolvedWelcomeUrl = ""
+        //Use the default welcome URL if it is null or empty.
+        let welcomeUrl = config.get('welcomeUrl', constants.DEFAULT_WELCOME_URL)?.trim() || constants.DEFAULT_WELCOME_URL;
 
-        if (welcomeUrl.startsWith('http://') || welcomeUrl.startsWith('https://') || welcomeUrl.startsWith("file://")) {
-            resolvedWelcomeUrl = welcomeUrl;
-        } else {
-            resolvedWelcomeUrl = vscode.Uri.file(path.join(context.extensionPath, welcomeUrl)).toString();
-        }
+        let resolvedWelcomeUrl = welcomeUrl.startsWith('http://') || welcomeUrl.startsWith('https://') || welcomeUrl.startsWith('file://')
+            ? welcomeUrl
+            : vscode.Uri.file(path.join(context.extensionPath, welcomeUrl)).toString();
 
         return resolvedWelcomeUrl
     }
@@ -36,6 +35,7 @@ function createWelcomeButton() {
 }
 
 function activate(context) {
+    // Main entry point for the extension
     const config = vscode.workspace.getConfiguration('robotframeworkWelcome');
     const hasSeenWelcome = config.get('hasSeenWelcome', false);
 
@@ -137,7 +137,7 @@ function showWelcomePage(context, config = vscode.workspace.getConfiguration('ro
                 outputChannel.appendLine(`Assets: ${assets.img}`)
             }
             let fileContent = fs.readFileSync(localFilePath, 'utf8');
-            panel.webview.html = assetsManager.replaceAssets(panel.webview, context, fileContent, assets);
+            panel.webview.html = assetsManager.replaceAssets(panel.webview, context, fileContent, assets, isDefaultWelcomePage);
         } else {
             vscode.window.showErrorMessage(`File not found: ${localFilePath}`);
         }

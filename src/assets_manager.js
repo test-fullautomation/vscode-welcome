@@ -20,7 +20,7 @@ function getAssets() {
  * @returns {string} - The updated HTML content.
  */
 
-function replaceAssets(webview, context, htmlContent, assets) {
+function replaceAssets(webview, context, htmlContent, assets, defaultAssets = true) {
     let resources = {};
 
     Object.keys(assets).forEach((key) => {
@@ -31,7 +31,11 @@ function replaceAssets(webview, context, htmlContent, assets) {
                     // Split the asset path into parts
                     const splitParts = asset.split('/');
                     const placeholder = splitParts[splitParts.length - 1];
-                    const resourcePath = path.join(context.extensionPath, ...splitParts);
+                    let resourcePath = asset;
+
+                    if (defaultAssets) {
+                        resourcePath = path.join(context.extensionPath, ...splitParts);
+                    }
 
                     if (!fs.existsSync(resourcePath)) {
                         throw new Error(`Resource file not found: ${placeholder}`);
