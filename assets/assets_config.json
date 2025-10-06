@@ -4,14 +4,20 @@
    ],
    "css": [
       "assets/styles/styles.css",
-      "assets/styles/bootstrap.min.css"
+      "assets/styles/bootstrap.min.css",
+      "assets/styles/libdoc_styles.css"
    ],
    "js": [
       "assets/js/script.js",
       "assets/js/bootstrap.bundle.min.js"
    ],
    "html": [
-      "assets/html/started.html",
+      "assets/html/Collection.html",
+      "assets/html/connection_manager.html",
+      "assets/html/dbus_manager.html",
+      "assets/html/robotlog2db.html",
+      "assets/html/robotlog2rqm.html",
+      "assets/html/UDSKeywords.html",
       "assets/index.html"
    ]
 }
