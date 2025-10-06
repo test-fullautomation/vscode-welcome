@@ -3,7 +3,7 @@ const path = require('path');
 const fs = require('fs');
 const assetsManager = require('./assets_manager.js');
 const outputChannel = vscode.window.createOutputChannel('Asset Manager');
-import constants from './constants.js';
+const constants = require('./constants.js');
 
 let isWelcomePageOpen = false;
 
@@ -117,8 +117,8 @@ function showWelcomePage(context, config = vscode.workspace.getConfiguration('ro
         // Check if the file exists
         if (fs.existsSync(localFilePath)) {
             // Read the file content and set it as the Webview's HTML
-            const regexDefaultLocalPath = /test-fullautomation\.vscode-welcome-\d+\.\d+\.\d+\\assets\\index\.html\\?$/;
-            const isDefaultWelcomePage = regexDefaultLocalPath.test(localFilePath)
+            const isDefaultWelcomePage = constants.REGEX_DEFAULT_FILE_PATH.test(localFilePath)
+
             let assets = null
 
             if (isDefaultWelcomePage) {
@@ -255,7 +255,6 @@ async function loadWebviewContent(message, panel, context) {
     try {
         // Decode the URL
         let decodedUrl = decodeURIComponent(message.name);
-
         // Remove the prefix
         let filePath = decodedUrl.replace("https://file+.vscode-resource.vscode-cdn.net/", "");
 
@@ -264,10 +263,25 @@ async function loadWebviewContent(message, panel, context) {
 
         // Read the file asynchronously
         let fileContent = await fs.promises.readFile(filePath, 'utf8');
+        outputChannel.append(decodedUrl)
+        const isDefaultWelcomePage = constants.REGEX_DEFAULT_FILE_PATH.test(decodedUrl)
+        outputChannel.append(`Condition:${fileContent.includes("libdoc-title")} ${isDefaultWelcomePage}/n`)
+        if (fileContent.includes("libdoc-title") && isDefaultWelcomePage) {
+            // Inject custom styles for libdoc pages
+            const libdoc_styles = '<link href="libdoc_styles.css" rel="stylesheet">'
+            const styles = '<link href="styles.css" rel="stylesheet">'
+            fileContent = fileContent.replace('</head>', `${styles}\n${libdoc_styles}\n</head>`)
+
+            const button_back = `<button class="back-button" onclick="changeWebview('index.html')">Back</button>`
+            const js_script = `<script src="script.js"></script>`
+            fileContent = fileContent.replace('<body>', `<body>\n${js_script}\n${button_back}\n`);
+        }
+
         const assets = assetsManager.getAssets();
 
         // Replace assets and set the webview HTML
         panel.webview.html = assetsManager.replaceAssets(panel.webview, context, fileContent, assets);
+        outputChannel.append(panel.webview.html)
     } catch (error) {
         vscode.window.showErrorMessage(`Failed to load asset: ${error.message}`);
     }
