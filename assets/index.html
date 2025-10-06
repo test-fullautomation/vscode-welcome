@@ -23,7 +23,7 @@
                 <button class="nav-link active" id="start-tab" data-bs-toggle="tab" data-bs-target="#start" type="button" role="tab" aria-selected="true">Start</button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="useful-tab" data-bs-toggle="tab" data-bs-target="#recent" type="button" role="tab" aria-selected="false" tabindex="-1">Recent</button>
+                <button class="nav-link" id="documents-tab" data-bs-toggle="tab" data-bs-target="#keywords-documentation" type="button" role="tab" aria-selected="false" tabindex="-1">Keyword Documentation</button>
             </li>
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="customize-tab" data-bs-toggle="tab" data-bs-target="#customize" type="button" role="tab" aria-selected="false" tabindex="-1">Customize</button>
@@ -59,10 +59,34 @@
                 </ul>
             </div>
 
-            <!-- Recent Tab -->
-            <div class="tab-pane fade" id="recent" role="tabpanel" aria-labelledby="useful-tab">
-                <h4>Useful Path</h4>
+            <!-- Documents Tab -->
+            <div class="tab-pane fade" id="keywords-documentation" role="tabpanel" aria-labelledby="documents-tab">
+                <h4>Documents</h4>
                 <ul class="list-group mt-3">
+                    <li class="list-group-item">
+                        <a href="#" onclick="changeWebview('UDSKeywords.html')">RobotFramework UDS</a>
+                        <p class="mb-0 small">Keywords for sending UDS (Unified Diagnostic Services) requests and interpreting response.</p>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="#" onclick="changeWebview('Collection.html')">RobotFramework Extensions Collection</a>
+                        <p class="mb-0 small">Extends Robot Framework with keywords for string operations, path normalization, and data pretty-printing.</p>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="#" onclick="changeWebview('connection_manager.html')">RobotFramework Qconnection Base</a>
+                        <p class="mb-0 small">Handles continuous trace log reception and bidirectional data exchange over connections like TCP, SSH, or Serial.</p>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="#" onclick="changeWebview('dbus_manager.html')">RobotFramework Dbus</a>
+                        <p class="mb-0 small">Supports automated testing of DBus services with keywords for testing methods and signals synchronously and asynchronously.</p>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="#" onclick="changeWebview('robotlog2db.html')">RobotFramework RobotLog2DB</a>
+                        <p class="mb-0 small">CLI tool to import Robot Framework results into TestResultWebApp for test execution overviews.</p>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="#" onclick="changeWebview('robotlog2rqm.html')">RobotFramework RobotLog2RQM</a>
+                        <p class="mb-0 small">RobotLog2RQM facilitates the import of Robot Framework result file(s) in *.xml format into IBM® Rational® Quality Manager (RQM) resources.</p>
+                    </li>
                     <!-- <li class="list-group-item">
                         <a href="#" onclick="openSelectedFolder(this.nextElementSibling.textContent.trim())">Robot Test</a>
                         <p class="mb-0 small">ROBOTTESTPATH</p>

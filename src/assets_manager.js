@@ -42,7 +42,7 @@ function replaceAssets(webview, context, htmlContent, assets, defaultAssets = tr
                     }
 
                     const assetPath = webview.asWebviewUri(vscode.Uri.file(resourcePath));
-                    htmlContent = htmlContent.replace(new RegExp(placeholder, 'g'), assetPath.toString());
+                    htmlContent = htmlContent.replace(new RegExp(`\\b${placeholder}\\b`, 'g'), assetPath.toString());
                 } catch (error) {
                     vscode.window.showErrorMessage(`Failed to load asset: ${error.message}`);
                 }
