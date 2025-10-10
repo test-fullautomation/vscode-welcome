@@ -2,7 +2,7 @@ const vscode = require('vscode');
 const path = require('path');
 const fs = require('fs');
 const assetsManager = require('./assets_manager.js');
-const outputChannel = vscode.window.createOutputChannel('Asset Manager');
+const outputChannel = vscode.window.createOutputChannel('Main');
 const constants = require('./constants.js');
 
 let isWelcomePageOpen = false;
@@ -122,11 +122,8 @@ function showWelcomePage(context, config = vscode.workspace.getConfiguration('ro
             let assets = null
 
             if (isDefaultWelcomePage) {
-                outputChannel.appendLine('Using the default welcome page from the extension assets.')
                 assets = assetsManager.getAssets();
-                outputChannel.appendLine(`Assets: ${assets.img}`)
             } else {
-                outputChannel.appendLine('Using a custom welcome page from the user configuration.')
                 config = vscode.workspace.getConfiguration('robotframeworkWelcome');
                 assets = {
                     css: config.get('css', []),
@@ -134,10 +131,11 @@ function showWelcomePage(context, config = vscode.workspace.getConfiguration('ro
                     img: config.get('img', []),
                     html: config.get('html', [])
                 }
-                outputChannel.appendLine(`Assets: ${assets.img}`)
+                assets.html.push(resolvedWelcomeUrl)
             }
             let fileContent = fs.readFileSync(localFilePath, 'utf8');
             panel.webview.html = assetsManager.replaceAssets(panel.webview, context, fileContent, assets, isDefaultWelcomePage);
+            outputChannel.append(panel.webview.html)
         } else {
             vscode.window.showErrorMessage(`File not found: ${localFilePath}`);
         }
@@ -170,18 +168,6 @@ function showWelcomePage(context, config = vscode.workspace.getConfiguration('ro
         isWelcomePageOpen = false
         config.update('hasSeenWelcome', true, vscode.ConfigurationTarget.Global);
     }, null, context.subscriptions);
-}
-
-function loadResources(htmlContent) {
-    // Replace environment variables in the HTML content
-    let resources = ['ROBOTTESTPATH', 'ROBOTPYTHONPATH']
-
-    resources.forEach(resource => {
-        const value = process.env[resource];
-        htmlContent = htmlContent.replaceAll(resource, value);
-    });
-
-    return htmlContent
 }
 
 async function openRobotTestWorkspace() {
