@@ -72,7 +72,7 @@ function showWelcomePage(context, config = vscode.workspace.getConfiguration('ro
     // Precompute the localResourceRoots based on resolvedWelcomeUrl
     const localResourceRoots = isRemoteUrl
         ? []
-        : [vscode.Uri.file(path.dirname(vscode.Uri.parse(resolvedWelcomeUrl).fsPath))];
+        : [vscode.Uri.file(path.dirname(vscode.Uri.parse(resolvedWelcomeUrl).fsPath)), vscode.Uri.file(path.join(context.extensionPath, "assets"))];
 
     const panel = vscode.window.createWebviewPanel(
         'robotframeworkWelcome',
@@ -135,7 +135,7 @@ function showWelcomePage(context, config = vscode.workspace.getConfiguration('ro
             }
             let fileContent = fs.readFileSync(localFilePath, 'utf8');
             panel.webview.html = assetsManager.replaceAssets(panel.webview, context, fileContent, assets, isDefaultWelcomePage);
-            outputChannel.append(panel.webview.html)
+            // outputChannel.append(panel.webview.html)
         } else {
             vscode.window.showErrorMessage(`File not found: ${localFilePath}`);
         }

@@ -38,23 +38,29 @@ function replaceAssets(webview, context, htmlContent, assets, isDefaultAssets = 
                             const splitParts = defaultAsset.split('/');
                             const updatedAsset = path.join(context.extensionPath, ...splitParts);
                             assetList.push(updatedAsset); // Add new assets to the list
-                            return updatedAsset;
                         });
 
                         continue; // Skip the rest of the loop for this iteration
                     }
-
+                    outputChannel.append(`Processing asset: ${asset}\n`);
                     // Split the asset path into parts
                     const splitParts = asset.split(/[/\\]/);
                     const placeholder = splitParts[splitParts.length - 1];
                     let resourcePath = asset;
+
+                    // Converts to Windows file path
+                    if (resourcePath.startsWith("file:///")) {
+                        const uri = vscode.Uri.parse(resourcePath);
+                        resourcePath = uri.fsPath;
+                    }
                     outputChannel.append(`Placeholder: ${placeholder}\n`);
 
                     if (isDefaultAssets) {
                         resourcePath = path.join(context.extensionPath, ...splitParts);
                     }
-
+                    outputChannel.append(`Resource: ${resourcePath}\n`);
                     if (!fs.existsSync(resourcePath)) {
+                        outputChannel.append(`Resource: ${!fs.existsSync(resourcePath)}\n`);
                         throw new Error(`Resource file not found: ${placeholder}`);
                     }
 
