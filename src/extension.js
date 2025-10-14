@@ -56,6 +56,7 @@ function activate(context) {
             // Update the webview with the new configuration
             const config = vscode.workspace.getConfiguration('robotframeworkWelcome');
             showWelcomePage(context, config);
+            config.update('keepCustomWelcome', true, vscode.ConfigurationTarget.Global);
         }
     }));
 
