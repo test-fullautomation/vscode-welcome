@@ -15,10 +15,13 @@
       "assets/html/Collection.html",
       "assets/html/connection_manager.html",
       "assets/html/dbus_manager.html",
-      "assets/html/DoipKeywords.html",
       "assets/html/robotlog2db.html",
       "assets/html/robotlog2rqm.html",
       "assets/html/UDSKeywords.html",
-      "assets/index.html"
+      "assets/index.html",
+      "assets/html/RobotFramework_DoIP/RobotFramework_DoIP.html",
+      "assets/html/RobotFramework_DoIP/RobotFramework_DoIP/DoipKeywords.html",
+      "assets/html/RobotFramework_DoIP/RobotFramework_DoIP/constants.html",
+      "assets/html/RobotFramework_DoIP/RobotFramework_DoIP/version.html"
    ]
 }
