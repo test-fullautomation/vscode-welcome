@@ -42,38 +42,6 @@
                     "type": "string",
                     "default": "./assets/index.html",
                     "description": "The URL to display in the Robotframework Welcome page. You can also set a local file path (e.g., file:///path/to/file.html)."
-                },
-                "robotframeworkWelcome.css": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    },
-                    "default": [],
-                    "description": "Array of CSS file paths to include in the welcome page."
-                },
-                "robotframeworkWelcome.html": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    },
-                    "default": [],
-                    "description": "Array of HTML file paths to include in the welcome page."
-                },
-                "robotframeworkWelcome.js": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    },
-                    "default": [],
-                    "description": "Array of JavaScript file paths to include in the welcome page."
-                },
-                "robotframeworkWelcome.img": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    },
-                    "default": [],
-                    "description": "Array of image file paths to include in the welcome page."
                 }
             }
         }

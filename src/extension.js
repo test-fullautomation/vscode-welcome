@@ -1,13 +1,14 @@
+// Import required modules
 const vscode = require('vscode');
 const path = require('path');
 const fs = require('fs');
 const assetsManager = require('./assets_manager.js');
-const outputChannel = vscode.window.createOutputChannel('Main');
 const constants = require('./constants.js');
 
-let isWelcomePageOpen = false;
+// Create an output channel for logging
+const outputChannel = vscode.window.createOutputChannel('Main');
 
-function handleWelcomeUrl(context, config = vscode.workspace.getConfiguration('robotframeworkWelcome')) {
+function handleWelcomeUrl(context, config = vscode.workspace.getConfiguration(constants.CONFIG_SECTION)) {
     try {
         //Use the default welcome URL if it is null or empty.
         let welcomeUrl = config.get('welcomeUrl', constants.DEFAULT_WELCOME_URL)?.trim() || constants.DEFAULT_WELCOME_URL;
@@ -28,7 +29,7 @@ function createWelcomeButton() {
     const welcomeButton = vscode.window.createStatusBarItem(vscode.StatusBarAlignment, 100);
     welcomeButton.text = '$(home) Welcome';
     welcomeButton.tooltip = 'Reopen the Welcome Page';
-    welcomeButton.command = 'extension.showRobotframeworkWelcome';
+    welcomeButton.command = constants.WELCOME_BUTTON_COMMAND;
     welcomeButton.show();
 
     return welcomeButton;
@@ -36,37 +37,37 @@ function createWelcomeButton() {
 
 function activate(context) {
     // Main entry point for the extension
-    const config = vscode.workspace.getConfiguration('robotframeworkWelcome');
+    const config = vscode.workspace.getConfiguration(constants.CONFIG_SECTION);
     const hasSeenWelcome = config.get('hasSeenWelcome', false);
 
     // Register a command to show the welcome page
-    const showWelcomeCommand = vscode.commands.registerCommand('extension.showRobotframeworkWelcome', () => {
-        if (!isWelcomePageOpen) {
-            isWelcomePageOpen = true;
+    const showWelcomeCommand = vscode.commands.registerCommand(constants.WELCOME_BUTTON_COMMAND, () => {
+        if (!constants.IS_WELCOME_PAGE_OPEN) {
+            constants.IS_WELCOME_PAGE_OPEN = true;
             showWelcomePage(context);
         }
     });
 
     // Add a status bar button to toggle the welcome page
-    const welcomeButton = createWelcomeButton()
+    const welcomeButton = createWelcomeButton();
 
     // Add the button and command to the context subscriptions
     context.subscriptions.push(showWelcomeCommand, welcomeButton, vscode.workspace.onDidChangeConfiguration((event) => {
-        if (event.affectsConfiguration('robotframeworkWelcome.welcomeUrl')) {
+        if (event.affectsConfiguration(`${constants.CONFIG_SECTION}.welcomeUrl`)) {
             // Update the webview with the new configuration
-            const config = vscode.workspace.getConfiguration('robotframeworkWelcome');
+            const config = vscode.workspace.getConfiguration(constants.CONFIG_SECTION);
             showWelcomePage(context, config);
             config.update('keepCustomWelcome', true, vscode.ConfigurationTarget.Global);
         }
     }));
 
     if (!hasSeenWelcome) {
-        vscode.commands.executeCommand('extension.showRobotframeworkWelcome');
+        vscode.commands.executeCommand(constants.WELCOME_BUTTON_COMMAND);
         config.update('hasSeenWelcome', true, vscode.ConfigurationTarget.Global);
     }
 }
 
-function showWelcomePage(context, config = vscode.workspace.getConfiguration('robotframeworkWelcome')) {
+function showWelcomePage(context, config = vscode.workspace.getConfiguration(constants.CONFIG_SECTION)) {
     const resolvedWelcomeUrl = handleWelcomeUrl(context);
     const isRemoteUrl = resolvedWelcomeUrl.startsWith('http://') || resolvedWelcomeUrl.startsWith('https://');
     
@@ -75,9 +76,12 @@ function showWelcomePage(context, config = vscode.workspace.getConfiguration('ro
         ? []
         : [vscode.Uri.file(path.dirname(vscode.Uri.parse(resolvedWelcomeUrl).fsPath)), vscode.Uri.file(path.join(context.extensionPath, "assets"))];
 
+    // Store the default assets path in constants
+    constants.DEFAULT_ASSETS_PATH = path.join(context.extensionPath, "assets").toString();
+
     const panel = vscode.window.createWebviewPanel(
-        'robotframeworkWelcome',
-        'Welcome to Robotframework AIO',
+        constants.CONFIG_SECTION,
+        constants.TITLE,
         vscode.ViewColumn.One,
         {
             enableScripts: true,
@@ -115,28 +119,13 @@ function showWelcomePage(context, config = vscode.workspace.getConfiguration('ro
     else {
         // Convert the file URI to a local file path
         const localFilePath = vscode.Uri.parse(resolvedWelcomeUrl).fsPath;
+        // Store the current HTML content path in constants
+        constants.CURRENT_HTML_CONTENT_PATH = localFilePath;
+
         // Check if the file exists
         if (fs.existsSync(localFilePath)) {
-            // Read the file content and set it as the Webview's HTML
-            const isDefaultWelcomePage = constants.REGEX_DEFAULT_FILE_PATH.test(localFilePath)
-
-            let assets = null
-
-            if (isDefaultWelcomePage) {
-                assets = assetsManager.getAssets();
-            } else {
-                config = vscode.workspace.getConfiguration('robotframeworkWelcome');
-                assets = {
-                    css: config.get('css', []),
-                    js: config.get('js', []),
-                    img: config.get('img', []),
-                    html: config.get('html', [])
-                }
-                assets.html.push(resolvedWelcomeUrl)
-            }
             let fileContent = fs.readFileSync(localFilePath, 'utf8');
-            panel.webview.html = assetsManager.replaceAssets(panel.webview, context, fileContent, assets, isDefaultWelcomePage);
-            // outputChannel.append(panel.webview.html)
+            panel.webview.html = assetsManager.resolveWebviewPath(panel.webview, fileContent)
         } else {
             vscode.window.showErrorMessage(`File not found: ${localFilePath}`);
         }
@@ -166,7 +155,7 @@ function showWelcomePage(context, config = vscode.workspace.getConfiguration('ro
 
     panel.onDidDispose(() => {
         // Update the configuration to mark that the welcome has been seen
-        isWelcomePageOpen = false
+        constants.IS_WELCOME_PAGE_OPEN = false
         config.update('hasSeenWelcome', true, vscode.ConfigurationTarget.Global);
     }, null, context.subscriptions);
 }
@@ -240,35 +229,36 @@ async function openFolderDialog(context) {
 
 async function loadWebviewContent(message, panel, context) {
     try {
-        // Decode the URL
-        let decodedUrl = decodeURIComponent(message.name);
-        // Remove the prefix
-        let filePath = decodedUrl.replace("https://file+.vscode-resource.vscode-cdn.net/", "");
+        const baseDir = path.dirname(constants.CURRENT_HTML_CONTENT_PATH);
 
-        // Replace forward slashes with backslashes
-        filePath = filePath.replace(/\//g, "\\");
+        // Resolve the file path based on message.name
+        const filePath = message.name.startsWith("vscode-welcome:")
+            ? assetsManager.resolveResourcePath(baseDir, message.name)
+            : path.resolve(baseDir, message.name);
 
-        // Read the file asynchronously
+        // Update the current HTML content path
+        constants.CURRENT_HTML_CONTENT_PATH = filePath;
+
+        // Read the file content asynchronously
         let fileContent = await fs.promises.readFile(filePath, 'utf8');
-        outputChannel.append(decodedUrl)
-        const isDefaultWelcomePage = constants.REGEX_DEFAULT_FILE_PATH.test(decodedUrl)
-        outputChannel.append(`Condition:${fileContent.includes("libdoc-title")} ${isDefaultWelcomePage}/n`)
-        if (fileContent.includes("libdoc-title") && isDefaultWelcomePage) {
-            // Inject custom styles for libdoc pages
-            const libdoc_styles = '<link href="libdoc_styles.css" rel="stylesheet">'
-            const styles = '<link href="styles.css" rel="stylesheet">'
-            fileContent = fileContent.replace('</head>', `${styles}\n${libdoc_styles}\n</head>`)
 
-            const button_back = `<button class="back-button" onclick="changeWebview('index.html')">Back</button>`
-            const js_script = `<script src="script.js"></script>`
-            fileContent = fileContent.replace('<body>', `<body>\n${js_script}\n${button_back}\n`);
+        // Inject styles and scripts if it's a default welcome page with "libdoc-title"
+        if (constants.REGEX_DEFAULT_FILE_PATH.test(filePath) && fileContent.includes("libdoc-title")) {
+            const styles = `
+                <link href="vscode-welcome:styles.css" rel="stylesheet">
+                <link href="vscode-welcome:libdoc_styles.css" rel="stylesheet">
+            `;
+            const scriptsAndButton = `
+                <script src="vscode-welcome:script.js"></script>
+                <button class="back-button" onclick="changeWebview('../index.html')">Back</button>
+            `;
+            fileContent = fileContent.replace('</head>', `${styles}\n</head>`);
+            fileContent = fileContent.replace('<body>', `<body>\n${scriptsAndButton}\n`);
         }
 
-        const assets = assetsManager.getAssets();
-
         // Replace assets and set the webview HTML
-        panel.webview.html = assetsManager.replaceAssets(panel.webview, context, fileContent, assets);
-        outputChannel.append(panel.webview.html)
+        panel.webview.html = assetsManager.resolveWebviewPath(panel.webview, fileContent);
+        outputChannel.append(`${panel.webview.html}`)
     } catch (error) {
         vscode.window.showErrorMessage(`Failed to load asset: ${error.message}`);
     }

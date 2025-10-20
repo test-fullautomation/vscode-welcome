@@ -5,15 +5,15 @@
 
         <title>Welcome to RobotFramework AIO</title>
         <!-- Bootstrap CSS -->
-        <link href="bootstrap.min.css" rel="stylesheet">
+        <link href="./styles/bootstrap.min.css" rel="stylesheet">
         <!-- Custom Styles -->
-        <link href="styles.css" rel="stylesheet">
+        <link href="./styles/styles.css" rel="stylesheet">
     </head>
 <body>
     <div class="welcome-container container-fluid">
         <!-- Header -->
         <div class="welcome-header">
-            <img src="RobotFramework_AIO.ico" id="robotfw-aio-icon">
+            <img src="./images/RobotFramework_AIO.ico" id="robotfw-aio-icon">
             <h2>Welcome to RobotFramework AIO</h2>
         </div>
 
@@ -60,32 +60,24 @@
                 <h4>Documents</h4>
                 <ul class="list-group mt-3">
                     <li class="list-group-item">
-                        <a href="#" onclick="changeWebview('UDSKeywords.html')">RobotFramework UDS</a>
+                        <a href="#" onclick="changeWebview('./html/UDSKeywords.html')">RobotFramework UDS</a>
                         <p class="mb-0 small">Keywords for sending UDS (Unified Diagnostic Services) requests and interpreting response.</p>
                     </li>
                     <li class="list-group-item">
-                        <a href="#" onclick="changeWebview('DoipKeywords.html')">RobotFramework DoIP</a>
+                        <a href="#" onclick="changeWebview('./html/DoipKeywords.html')">RobotFramework DoIP</a>
                         <p class="mb-0 small">Keywords for for interacting with vehicle ECUs via the Diagnostics over Internet Protocol (DoIP), enabling automated testing and diagnostics.</p>
                     </li>
                     <li class="list-group-item">
-                        <a href="#" onclick="changeWebview('Collection.html')">RobotFramework Extensions Collection</a>
+                        <a href="#" onclick="changeWebview('./html/Collection.html')">RobotFramework Extensions Collection</a>
                         <p class="mb-0 small">Extends Robot Framework with keywords for string operations, path normalization, and data pretty-printing.</p>
                     </li>
                     <li class="list-group-item">
-                        <a href="#" onclick="changeWebview('connection_manager.html')">RobotFramework Qconnection Base</a>
+                        <a href="#" onclick="changeWebview('./html/connection_manager.html')">RobotFramework Qconnection Base</a>
                         <p class="mb-0 small">Handles continuous trace log reception and bidirectional data exchange over connections like TCP, SSH, or Serial.</p>
                     </li>
                     <li class="list-group-item">
-                        <a href="#" onclick="changeWebview('dbus_manager.html')">RobotFramework Dbus</a>
+                        <a href="#" onclick="changeWebview('./html/dbus_manager.html')">RobotFramework Dbus</a>
                         <p class="mb-0 small">Supports automated testing of DBus services with keywords for testing methods and signals synchronously and asynchronously.</p>
-                    </li>
-                    <li class="list-group-item">
-                        <a href="#" onclick="changeWebview('robotlog2db.html')">RobotFramework RobotLog2DB</a>
-                        <p class="mb-0 small">CLI tool to import Robot Framework results into TestResultWebApp for test execution overviews.</p>
-                    </li>
-                    <li class="list-group-item">
-                        <a href="#" onclick="changeWebview('robotlog2rqm.html')">RobotFramework RobotLog2RQM</a>
-                        <p class="mb-0 small">RobotLog2RQM facilitates the import of Robot Framework result file(s) in *.xml format into IBM® Rational® Quality Manager (RQM) resources.</p>
                     </li>
                 </ul>
             </div>
@@ -119,6 +111,6 @@
     </div>
 
     <!-- Bootstrap JS -->
-    <script src="bootstrap.bundle.min.js"></script>
-    <script src="script.js"></script>
+    <script src="./js/bootstrap.bundle.min.js"></script>
+    <script src="./js/script.js"></script>
 </body></html>

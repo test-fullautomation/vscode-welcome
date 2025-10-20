@@ -1,8 +1,10 @@
 const fs = require('fs');
 const path = require('path');
 const vscode = require('vscode');
+const constants = require('./constants.js');
 const configPath = path.join(__dirname, '..', 'assets', 'assets_config.json');
 const outputChannel = vscode.window.createOutputChannel('Asset Manager');
+
 function getAssets() {
     if (!fs.existsSync(configPath)) {
         throw new Error(`Assets configuration file not found: ${configPath}`);
@@ -13,70 +15,72 @@ function getAssets() {
     return assets;
 }
 
-/**
- * Replaces asset placeholders in the HTML content with actual paths.
- * @param {string} htmlContent - The HTML content.
- * @param {Object} assets - The object containing asset paths.
- * @returns {string} - The updated HTML content.
- */
+function resolveWebviewPath(webview, htmlContent) {
+    const baseDir = path.dirname(constants.CURRENT_HTML_CONTENT_PATH);
 
-function replaceAssets(webview, context, htmlContent, assets, isDefaultAssets = true) {
-    let resources = {};
-
-    Object.keys(assets).forEach((key) => {
-        const assetList = assets[key];
-        if (Array.isArray(assetList) && assetList.length > 0) {
-            for (let i = 0; i < assetList.length; i++) {
-                try {
-                    let asset = assetList[i];
-                    if (asset.toUpperCase() === "DEFAULT") {
-                        let defaultAssetsList = getAssets();
-                        assetList.splice(i, 1); // Remove the "DEFAULT" asset
-                        i--; // Adjust the index to account for the removed element
-
-                        defaultAssetsList[key] = defaultAssetsList[key].map(defaultAsset => {
-                            const splitParts = defaultAsset.split('/');
-                            const updatedAsset = path.join(context.extensionPath, ...splitParts);
-                            assetList.push(updatedAsset); // Add new assets to the list
-                        });
-
-                        continue; // Skip the rest of the loop for this iteration
-                    }
-                    outputChannel.append(`Processing asset: ${asset}\n`);
-                    // Split the asset path into parts
-                    const splitParts = asset.split(/[/\\]/);
-                    const placeholder = splitParts[splitParts.length - 1];
-                    let resourcePath = asset;
-
-                    // Converts to Windows file path
-                    if (resourcePath.startsWith("file:///")) {
-                        const uri = vscode.Uri.parse(resourcePath);
-                        resourcePath = uri.fsPath;
-                    }
-                    outputChannel.append(`Placeholder: ${placeholder}\n`);
-
-                    if (isDefaultAssets) {
-                        resourcePath = path.join(context.extensionPath, ...splitParts);
-                    }
-                    outputChannel.append(`Resource: ${resourcePath}\n`);
-                    if (!fs.existsSync(resourcePath)) {
-                        outputChannel.append(`Resource: ${!fs.existsSync(resourcePath)}\n`);
-                        throw new Error(`Resource file not found: ${placeholder}`);
-                    }
-
-                    const assetPath = webview.asWebviewUri(vscode.Uri.file(resourcePath));
-                    outputChannel.append(`Resource: ${assetPath}\n`);
-                    htmlContent = htmlContent.replace(new RegExp(`\\b${placeholder}\\b`, 'g'), assetPath.toString());
-                } catch (error) {
-                    vscode.window.showErrorMessage(`Failed to load asset: ${error.message}`);
-                }
-            }
-        }
+    constants.TAGS_TO_PROCESS.forEach(({ tag, attribute }) => {
+        htmlContent = processTagAndPath(webview, baseDir, htmlContent, tag, attribute);
     });
+
     return htmlContent;
 }
+
+// Processes tags and paths in the HTML content
+function processTagAndPath(webview, baseDir, htmlContent, tag, attribute) {
+    const regex = new RegExp(`<${tag}[^>]*${attribute}=["']([^"']+)["'][^>]*>`, 'gi');
+
+    return htmlContent.replace(regex, (match, originalPath) => {
+        if (/^(https?:|data:)/.test(originalPath) || originalPath === "#") {
+            return match; // Ignore absolute URLs or "#" links
+        }
+
+        const resourcePath = resolveResourcePath(baseDir, originalPath);
+        if (resourcePath && fs.existsSync(resourcePath)) {
+            const webviewUri = webview.asWebviewUri(vscode.Uri.file(resourcePath));
+            return match.replace(originalPath, webviewUri.toString());
+        } else {
+            console.error(`Resource file not found: ${originalPath}`);
+            return match;
+        }
+    });
+}
+
+// Resolves the resource path based on the original path or message.name
+function resolveResourcePath(baseDir, originalPath) {
+    if (originalPath.startsWith("vscode-welcome:")) {
+        const assetFile = originalPath.replace("vscode-welcome:", "");
+        return findFileInSubdirectories(constants.DEFAULT_ASSETS_PATH, assetFile);
+    } else if (path.isAbsolute(originalPath)) {
+        return originalPath; // If the path is already absolute, return it directly
+    } else {
+        return path.join(baseDir, originalPath); // Resolve relative paths
+    }
+}
+
+// Finds a file in subdirectories dynamically, including support for message.name
+function findFileInSubdirectories(baseDir, fileName) {
+    try {
+        const items = fs.readdirSync(baseDir, { withFileTypes: true });
+        for (const item of items) {
+            const filePath = path.join(baseDir, item.name);
+            if (item.isDirectory()) {
+                const nestedFilePath = findFileInSubdirectories(filePath, fileName);
+                if (nestedFilePath) {
+                    return nestedFilePath; // Return the file path if found in subdirectories
+                }
+            } else if (item.isFile() && item.name === fileName) {
+                return filePath; // Return the file path if it matches the file name
+            }
+        }
+    } catch (error) {
+        console.error(`Error reading directory: ${error.message}`);
+    }
+    return null;
+}
+
 outputChannel.show()
 module.exports = {
     getAssets,
-    replaceAssets
+    resolveWebviewPath,
+    resolveResourcePath
 };
