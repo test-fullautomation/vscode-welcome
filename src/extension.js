@@ -115,13 +115,14 @@ function showWelcomePage(context, config = vscode.workspace.getConfiguration(con
                 <iframe src="${resolvedWelcomeUrl}"></iframe>
             </body>
             </html>`;
+            HISTORY_WEBVIEW.push(resolvedWelcomeUrl)
     }
     else {
         // Convert the file URI to a local file path
         const localFilePath = vscode.Uri.parse(resolvedWelcomeUrl).fsPath;
         // Store the current HTML content path in constants
         constants.CURRENT_HTML_CONTENT_PATH = localFilePath;
-
+        constants.HISTORY_WEBVIEW.push(resolvedWelcomeUrl)
         // Check if the file exists
         if (fs.existsSync(localFilePath)) {
             let fileContent = fs.readFileSync(localFilePath, 'utf8');
@@ -140,7 +141,7 @@ function showWelcomePage(context, config = vscode.workspace.getConfiguration(con
                 await openFolderDialog(context);
                 break;
             case 'changeWebview':
-                await loadWebviewContent(message, panel, context);
+                await loadWebviewContent(message, panel);
                 break;
             case 'openSelectedFolder':
                 await openSelectedFolder(message);
@@ -227,14 +228,20 @@ async function openFolderDialog(context) {
     }
 }
 
-async function loadWebviewContent(message, panel, context) {
+async function loadWebviewContent(message, panel) {
     try {
         const baseDir = path.dirname(constants.CURRENT_HTML_CONTENT_PATH);
+        let filePath = '';
 
         // Resolve the file path based on message.name
-        const filePath = message.name.startsWith("vscode-welcome:")
+        if (message.name.startsWith("file://")) {
+            filePath = vscode.Uri.parse(message.name).fsPath;
+        }
+        else {
+            filePath = message.name.startsWith("vscode-welcome:")
             ? assetsManager.resolveResourcePath(baseDir, message.name)
             : path.resolve(baseDir, message.name);
+        }
 
         // Update the current HTML content path
         constants.CURRENT_HTML_CONTENT_PATH = filePath;
@@ -250,7 +257,7 @@ async function loadWebviewContent(message, panel, context) {
             `;
             const scriptsAndButton = `
                 <script src="vscode-welcome:script.js"></script>
-                <button class="back-button" onclick="changeWebview('../index.html')">Back</button>
+                <button class="back-button" onclick="changeWebview('${constants.HISTORY_WEBVIEW.pop()}')">Back</button>
             `;
             fileContent = fileContent.replace('</head>', `${styles}\n</head>`);
             fileContent = fileContent.replace('<body>', `<body>\n${scriptsAndButton}\n`);
@@ -258,7 +265,7 @@ async function loadWebviewContent(message, panel, context) {
 
         // Replace assets and set the webview HTML
         panel.webview.html = assetsManager.resolveWebviewPath(panel.webview, fileContent);
-        outputChannel.append(`${panel.webview.html}`)
+        constants.HISTORY_WEBVIEW.push(message.name)
     } catch (error) {
         vscode.window.showErrorMessage(`Failed to load asset: ${error.message}`);
     }
