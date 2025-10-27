@@ -13,10 +13,16 @@ function handleWelcomeUrl(context, config = vscode.workspace.getConfiguration(co
         //Use the default welcome URL if it is null or empty.
         let welcomeUrl = config.get('welcomeUrl', constants.DEFAULT_WELCOME_URL)?.trim() || constants.DEFAULT_WELCOME_URL;
 
-        let resolvedWelcomeUrl = welcomeUrl.startsWith('http://') || welcomeUrl.startsWith('https://') || welcomeUrl.startsWith('file://')
-            ? welcomeUrl
-            : vscode.Uri.file(path.join(context.extensionPath, welcomeUrl)).toString();
+        let resolvedWelcomeUrl = ""
 
+        if (welcomeUrl.startsWith('http://') || welcomeUrl.startsWith('https://') || welcomeUrl.startsWith('file://')) {
+            resolvedWelcomeUrl = welcomeUrl
+        }
+        else {
+            resolvedWelcomeUrl = fs.existsSync(welcomeUrl)
+                ? vscode.Uri.file(welcomeUrl).toString()
+                : vscode.Uri.file(path.join(context.extensionPath, welcomeUrl)).toString();
+        }
         return resolvedWelcomeUrl
     }
     catch (error) {
