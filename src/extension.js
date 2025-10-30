@@ -41,12 +41,33 @@ function createWelcomeButton() {
     return welcomeButton;
 }
 
-function activate(context) {
-    // Main entry point for the extension
+function configureWelcomeSettings() {
     const config = vscode.workspace.getConfiguration(constants.CONFIG_SECTION);
-    const hasSeenWelcome = config.get('hasSeenWelcome', false);
+    const keepCustomWelcome = config.get("keepCustomWelcome")
 
-    // Register a command to show the welcome page
+    if (keepCustomWelcome != true) {
+        config.update('hasSeenWelcome', false, vscode.ConfigurationTarget.Global);
+        config.update('keepCustomWelcome', false, vscode.ConfigurationTarget.Global);
+    }
+    else {
+        config.update('hasSeenWelcome', false, vscode.ConfigurationTarget.Global);
+    }
+
+    return config
+}
+
+function activate(context) {
+    vscode.commands.executeCommand(constants.WELCOME_BUTTON_COMMAND);
+    // Main entry point for the extension
+
+    const config = configureWelcomeSettings()
+    const hasSeenWelcome = config.get('hasSeenWelcome', false)
+
+    if (!hasSeenWelcome || constants.IS_WELCOME_PAGE_OPEN) {
+        constants.IS_WELCOME_PAGE_OPEN = true;
+        showWelcomePage(context);
+    }
+
     const showWelcomeCommand = vscode.commands.registerCommand(constants.WELCOME_BUTTON_COMMAND, () => {
         if (!constants.IS_WELCOME_PAGE_OPEN) {
             constants.IS_WELCOME_PAGE_OPEN = true;
@@ -62,15 +83,11 @@ function activate(context) {
         if (event.affectsConfiguration(`${constants.CONFIG_SECTION}.welcomeUrl`)) {
             // Update the webview with the new configuration
             const config = vscode.workspace.getConfiguration(constants.CONFIG_SECTION);
+            const welcomeUrl = config.get(`welcomeUrl`)
+
             showWelcomePage(context, config);
-            config.update('keepCustomWelcome', true, vscode.ConfigurationTarget.Global);
         }
     }));
-
-    if (!hasSeenWelcome) {
-        vscode.commands.executeCommand(constants.WELCOME_BUTTON_COMMAND);
-        config.update('hasSeenWelcome', true, vscode.ConfigurationTarget.Global);
-    }
 }
 
 function showWelcomePage(context, config = vscode.workspace.getConfiguration(constants.CONFIG_SECTION)) {
