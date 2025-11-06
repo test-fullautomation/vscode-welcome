@@ -37,19 +37,17 @@ To install the \textbf{Robotframework Welcome} extension:
     \item Select the generated \texttt{robotframework-welcome-x.x.x.vsix} file to install the extension.
 \end{enumerate}
 
-\subsection{How to Set a Custom URL for the Welcome Page}
+\subsection{How to use}
 
 To customize the URL displayed on the welcome page:
 
 \begin{enumerate}
-    \item Look for the setting named \texttt{robotframeworkWelcome.welcomeUrl} in the \texttt{package.json} file.
-    \item Enter the desired URL (e.g., \url{https://your-custom-url.com}) or a local file path (e.g., \texttt{file:///absolute/path/to/file.html}).
+    \item Look for the setting named \texttt{robotframeworkWelcome.welcomeUrl} in the \texttt{settings.json} of vscode.
+    \item Enter the desired URL (e.g., \url{https://your-custom-url.com}) or a local file path (e.g., \texttt{path/to/file.html}).
     \item Save the changes to the \texttt{package.json} file.
-    \item Run the script \texttt{build\_vsix.sh} to build the extension.
-    \item Install the generated \texttt{robotframework-welcome-x.x.x.vsix} file in Visual Studio Code or VSCodium.
 \end{enumerate}
 
-The next time the welcome page is displayed, it will load the custom URL or local file you specified.
+The status bar (bottom-right) now includes a "Welcome" button, allowing you to easily reopen the redesigned welcome page at any time.
 
 \hypertarget{description-feedback}{%
 \section{Feedback}\label{description-feedback}}
