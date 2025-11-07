@@ -4,7 +4,9 @@ vscode-welcome - vscode extension
 # Table of Contents
 
 -   [Getting Started](#getting-started)
+    -   [How to build](#how-to-build)
     -   [How to install](#how-to-install)
+    -   [How to use](#how-to-use)
 -   [Package Documentation](#package-documentation)
 -   [Feedback](#feedback)
 -   [Maintainers](#maintainers)
@@ -40,17 +42,15 @@ following steps:
 As soon as the installation is completed, the welcome page will be
 displayed for the newly installed RobotFramework-AIO.
 
-## How to set a custom URL for the welcome page
+## How to use
 
 If you want to display a custom URL in the welcome page, follow these steps:
 
-1. Look for the setting named `robotframeworkWelcome.welcomeUrl` in `package.json`
-2. Enter the desired URL (e.g., `https://your-custom-url.com`) or a local file path (e.g., `file:///absolute/path/to/file.html`) in the input field.
+1. Look for the setting named `robotframeworkWelcome.welcomeUrl` in `settings.json` of vscode.
+2. Enter the desired URL (e.g., `https://your-custom-url.com`) or a local file path (e.g., `path/to/file.html`) in the input field.
 3. Save the settings.
-4. Run `build_vsix.sh` to build the extension.
-5. Install `vscode-welcome-x.x.x.vsix`.
 
-The next time the welcome page is displayed, it will load the custom URL you specified.
+The status bar (bottom-right) now includes a "Welcome" button, allowing you to easily reopen the redesigned welcome page at any time.
 
 # Package Documentation
 

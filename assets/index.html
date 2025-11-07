@@ -1,0 +1,91 @@
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <title>Welcome to RobotFramework AIO</title>
+        <!-- Bootstrap CSS -->
+        <link href="./styles/bootstrap.min.css" rel="stylesheet">
+        <!-- Custom Styles -->
+        <link href="./styles/styles.css" rel="stylesheet">
+    </head>
+<body>
+    <div class="welcome-container container-fluid">
+        <!-- Header -->
+        <div class="welcome-header">
+            <img src="./images/RobotFramework_AIO.ico" id="robotfw-aio-icon">
+            <h2>Welcome to RobotFramework AIO</h2>
+        </div>
+
+        <!-- Tabs Navigation -->
+        <ul class="nav nav-tabs" id="welcomeTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="start-tab" data-bs-toggle="tab" data-bs-target="#start" type="button" role="tab" aria-selected="true">Start</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="documents-tab" data-bs-toggle="tab" data-bs-target="#documentations" type="button" role="tab" aria-selected="false" tabindex="-1">Documentations</button>
+            </li>
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content" id="welcomeTabContent">
+            <!-- Start Tab -->
+            <div class="tab-pane fade active show" id="start" role="tabpanel" aria-labelledby="start-tab">
+                <h4>Get Started</h4>
+                <ul class="list-group mt-3">
+                    <li class="list-group-item">
+                        <a href="#" onclick="openFileDialog()">Open File</a>
+                        <p class="mb-0 small">Start with a new file for your project.</p>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="#" onclick="openFolderDialog()">Open Folder</a>
+                        <p class="mb-0 small">Open a folder to work on your project.</p>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="#" onclick="openRobotTestWorkspace()">Open Robot Test Workspace</a>
+                        <p class="mb-0 small">Learn the basics of Robot Framework AIO.</p>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="https://robotframework-aio.org/">Visit our website</a>
+                        <p class="mb-0 small">https://robotframework-aio.org/</p>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Documents Tab -->
+            <div class="tab-pane fade" id="documentations" role="tabpanel" aria-labelledby="documents-tab">
+                <h4>Documents</h4>
+                <ul class="list-group mt-3">
+                    <li class="list-group-item">
+                        <a href="#" onclick="changeWebview('./html/UDSKeywords.html')">RobotFramework UDS</a>
+                        <p class="mb-0 small">Keywords for sending UDS (Unified Diagnostic Services) requests and interpreting response.</p>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="#" onclick="changeWebview('./html/DoipKeywords.html')">RobotFramework DoIP</a>
+                        <p class="mb-0 small">Keywords for interacting with vehicle ECUs via the Diagnostics over Internet Protocol (DoIP), enabling automated testing and diagnostics.</p>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="#" onclick="changeWebview('./html/Collection.html')">RobotFramework Extensions Collection</a>
+                        <p class="mb-0 small">Extends Robot Framework with keywords for string operations, path normalization, and data pretty-printing.</p>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="#" onclick="changeWebview('./html/connection_manager.html')">RobotFramework Qconnection Base</a>
+                        <p class="mb-0 small">Handles continuous trace log reception and bidirectional data exchange over connections like TCP, SSH, or Serial.</p>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="#" onclick="changeWebview('./html/dbus_manager.html')">RobotFramework Dbus</a>
+                        <p class="mb-0 small">Supports automated testing of DBus services with keywords for testing methods and signals synchronously and asynchronously.</p>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="#" onclick="changeWebview('./html/prometheus_interface.html')">RobotFramework Prometheus</a>
+                        <p class="mb-0 small">Enables Robot Framework to interact with the Prometheus monitoring system, allowing test data to be monitored and analyzed.</p>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="./js/bootstrap.bundle.min.js"></script>
+    <script src="./js/script.js"></script>
+</body></html>

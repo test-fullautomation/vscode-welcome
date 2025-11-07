@@ -1,0 +1,34 @@
+:root {
+   --background-color: #252526 !important;
+   --text-color: #d4d4d4 !important;
+   --border-color: #3c3c3c !important;
+   --robot-highlight: #00c0b5 !important;
+   --highlighted-color: var(--text-color) !important;
+   --highlighted-background-color: yellow !important;
+   --less-important-text-color: gray !important;
+   --link-color: #5252e5 !important;
+   --light-background-color: #252526 !important;
+}
+
+.back-button {
+   position: fixed; /* Makes the button fixed on the screen */
+   bottom: 40px; /* Distance from the bottom of the viewport */
+   right: 40px; /* Distance from the right of the viewport */
+   width: 60px; /* Set width for the button */
+   height: 40px; /* Set height for the button */
+   background-color: #3a3a3b; /* Blue background */
+   color: white; /* White text */
+   border: none;
+   border-radius: 10px; /* Slightly rounded corners */
+   cursor: pointer;
+   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+   z-index: 1000; /* Ensures the button is above other elements */
+   font-size: 15px; /* Adjust font size for the text */
+   display: flex;
+   align-items: center;
+   justify-content: center;
+}
+
+.back-button:hover {
+   text-decoration: underline;
+}
