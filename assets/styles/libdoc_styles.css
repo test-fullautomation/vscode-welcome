@@ -12,7 +12,6 @@
 
 .back-button {
    position: fixed; /* Makes the button fixed on the screen */
-   position: fixed; /* Makes the button fixed on the screen */
    bottom: 40px; /* Distance from the bottom of the viewport */
    right: 40px; /* Distance from the right of the viewport */
    width: 60px; /* Set width for the button */

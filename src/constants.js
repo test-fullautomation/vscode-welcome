@@ -1,5 +1,5 @@
 module.exports = {
-   DEFAULT_WELCOME_URL: "./assets/index.html/",
+   DEFAULT_WELCOME_URL: "./assets/index.html",
    REGEX_DEFAULT_FILE_PATH: /test-fullautomation\.vscode-welcome-\d+\.\d+\.\d+[\\/]+assets[\\/]+.*$/,
    TAGS_TO_PROCESS: [
       { tag: 'a', attribute: 'href' },

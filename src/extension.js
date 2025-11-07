@@ -121,7 +121,7 @@ function showWelcomePage(context, config = vscode.workspace.getConfiguration(con
                 <iframe src="${resolvedWelcomeUrl}"></iframe>
             </body>
             </html>`;
-            HISTORY_WEBVIEW.push(resolvedWelcomeUrl)
+        constants.HISTORY_WEBVIEW.push(resolvedWelcomeUrl)
     }
     else {
         // Convert the file URI to a local file path
