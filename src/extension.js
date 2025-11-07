@@ -41,30 +41,15 @@ function createWelcomeButton() {
     return welcomeButton;
 }
 
-function configureWelcomeSettings() {
-    const config = vscode.workspace.getConfiguration(constants.CONFIG_SECTION);
-    const keepCustomWelcome = config.get("keepCustomWelcome")
-
-    if (keepCustomWelcome != true) {
-        config.update('hasSeenWelcome', false, vscode.ConfigurationTarget.Global);
-        config.update('keepCustomWelcome', false, vscode.ConfigurationTarget.Global);
-    }
-    else {
-        config.update('hasSeenWelcome', false, vscode.ConfigurationTarget.Global);
-    }
-
-    return config
-}
-
 function activate(context) {
-    vscode.commands.executeCommand(constants.WELCOME_BUTTON_COMMAND);
     // Main entry point for the extension
 
-    const config = configureWelcomeSettings()
+    const config = vscode.workspace.getConfiguration(constants.CONFIG_SECTION);
     const hasSeenWelcome = config.get('hasSeenWelcome', false)
 
-    if (!hasSeenWelcome || constants.IS_WELCOME_PAGE_OPEN) {
+    if (!hasSeenWelcome) {
         constants.IS_WELCOME_PAGE_OPEN = true;
+        config.update('hasSeenWelcome', true, vscode.ConfigurationTarget.Global);
         showWelcomePage(context);
     }
 
@@ -83,8 +68,6 @@ function activate(context) {
         if (event.affectsConfiguration(`${constants.CONFIG_SECTION}.welcomeUrl`)) {
             // Update the webview with the new configuration
             const config = vscode.workspace.getConfiguration(constants.CONFIG_SECTION);
-            const welcomeUrl = config.get(`welcomeUrl`)
-
             showWelcomePage(context, config);
         }
     }));

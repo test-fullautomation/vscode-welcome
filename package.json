@@ -28,11 +28,6 @@
         "configuration": {
             "title": "Robotframework AIO Welcome",
             "properties": {
-                "robotframeworkWelcome.keepCustomWelcome": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "Keep custom welcome page when updating the VSCodium."
-                },
                 "robotframeworkWelcome.hasSeenWelcome": {
                     "type": "boolean",
                     "default": false,

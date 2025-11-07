@@ -9,7 +9,7 @@ module.exports = {
   ],
   CURRENT_HTML_CONTENT_PATH: "",
   DEFAULT_ASSETS_PATH: "",
-  IS_WELCOME_PAGE_OPEN: true,
+  IS_WELCOME_PAGE_OPEN: false,
   CONFIG_SECTION: "robotframeworkWelcome",
   TITLE: "Welcome to Robotframework AIO",
   WELCOME_BUTTON_COMMAND: "extension.showRobotframeworkWelcome",
