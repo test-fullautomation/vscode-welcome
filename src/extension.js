@@ -5,9 +5,6 @@ const fs = require('fs');
 const assetsManager = require('./assets_manager.js');
 const constants = require('./constants.js');
 
-// Create an output channel for logging
-const outputChannel = vscode.window.createOutputChannel('Main');
-
 function handleWelcomeUrl(context, config = vscode.workspace.getConfiguration(constants.CONFIG_SECTION)) {
     try {
         //Use the default welcome URL if it is null or empty.
@@ -49,7 +46,6 @@ function activate(context) {
 
     if (!hasSeenWelcome) {
         constants.IS_WELCOME_PAGE_OPEN = true;
-        config.update('hasSeenWelcome', true, vscode.ConfigurationTarget.Global);
         showWelcomePage(context);
     }
 
@@ -76,7 +72,7 @@ function activate(context) {
 function showWelcomePage(context, config = vscode.workspace.getConfiguration(constants.CONFIG_SECTION)) {
     const resolvedWelcomeUrl = handleWelcomeUrl(context);
     const isRemoteUrl = resolvedWelcomeUrl.startsWith('http://') || resolvedWelcomeUrl.startsWith('https://');
-    
+
     // Precompute the localResourceRoots based on resolvedWelcomeUrl
     const localResourceRoots = isRemoteUrl
         ? []
@@ -155,16 +151,47 @@ function showWelcomePage(context, config = vscode.workspace.getConfiguration(con
             case 'openRobotTestWorkspace':
                 await openRobotTestWorkspace();
                 break;
+            case 'setWelcomePagePreference':
+                await setWelcomePagePreference(message.dontShowAgain);
+                break;
+            case 'getWelcomePagePreference':
+                await getWelcomePagePreference(panel);
+                break;
             default:
                 console.warn(`Unknown command: ${message.command}`);
         }
     });
 
     panel.onDidDispose(() => {
-        // Update the configuration to mark that the welcome has been seen
-        constants.IS_WELCOME_PAGE_OPEN = false
-        config.update('hasSeenWelcome', true, vscode.ConfigurationTarget.Global);
+        constants.IS_WELCOME_PAGE_OPEN = false;
     }, null, context.subscriptions);
+}
+
+async function setWelcomePagePreference(dontShowAgain) {
+    try {
+        const config = vscode.workspace.getConfiguration(constants.CONFIG_SECTION);
+        await config.update('hasSeenWelcome', dontShowAgain, vscode.ConfigurationTarget.Global);
+
+        if (dontShowAgain) {
+            vscode.window.showInformationMessage('Welcome page will not be shown on startup. You can still access it from the status bar.');
+        }
+    } catch (error) {
+        vscode.window.showErrorMessage(`Failed to save preference: ${error.message}`);
+    }
+}
+
+async function getWelcomePagePreference(panel) {
+    try {
+        const config = vscode.workspace.getConfiguration(constants.CONFIG_SECTION);
+        const hasSeenWelcome = config.get('hasSeenWelcome', false);
+
+        panel.webview.postMessage({
+            command: 'setCheckboxState',
+            checked: hasSeenWelcome
+        });
+    } catch (error) {
+        vscode.window.showErrorMessage(`Failed to get preference: ${error.message}`);
+    }
 }
 
 async function openRobotTestWorkspace() {
@@ -277,7 +304,6 @@ async function loadWebviewContent(message, panel) {
     }
 }
 
-outputChannel.show();
 module.exports = {
     activate
 };
