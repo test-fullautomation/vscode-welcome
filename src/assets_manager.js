@@ -3,7 +3,6 @@ const path = require('path');
 const vscode = require('vscode');
 const constants = require('./constants.js');
 const configPath = path.join(__dirname, '..', 'assets', 'assets_config.json');
-const outputChannel = vscode.window.createOutputChannel('Asset Manager');
 
 function getAssets() {
     if (!fs.existsSync(configPath)) {
@@ -78,7 +77,6 @@ function findFileInSubdirectories(baseDir, fileName) {
     return null;
 }
 
-outputChannel.show()
 module.exports = {
     getAssets,
     resolveWebviewPath,

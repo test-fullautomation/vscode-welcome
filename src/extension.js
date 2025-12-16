@@ -5,9 +5,6 @@ const fs = require('fs');
 const assetsManager = require('./assets_manager.js');
 const constants = require('./constants.js');
 
-// Create an output channel for logging
-const outputChannel = vscode.window.createOutputChannel('Main');
-
 function handleWelcomeUrl(context, config = vscode.workspace.getConfiguration(constants.CONFIG_SECTION)) {
     try {
         //Use the default welcome URL if it is null or empty.
@@ -277,7 +274,6 @@ async function loadWebviewContent(message, panel) {
     }
 }
 
-outputChannel.show();
 module.exports = {
     activate
 };
