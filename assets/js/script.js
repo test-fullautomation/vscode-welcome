@@ -51,4 +51,24 @@ window.addEventListener('message', event => {
          checkbox.checked = message.checked;
       }
    }
+
+   if (message.command === 'libdoc_back') {
+      console.log("doc-tab")
+      let attempts = 0;
+      const maxAttempts = 50; // 5 seconds max
+
+      const intervalId = setInterval(() => {
+         const docsTab = document.getElementById('documents-tab');
+
+         if (docsTab) {
+            console.log('Found documents tab:', docsTab);
+            docsTab.click();
+            clearInterval(intervalId);
+         }
+         else if (++attempts >= maxAttempts) {
+            console.warn('documents-tab not found, stopping wait');
+            clearInterval(intervalId);
+         }
+      }, 50);
+   }
 });

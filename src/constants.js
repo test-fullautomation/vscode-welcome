@@ -13,5 +13,6 @@ module.exports = {
   CONFIG_SECTION: "robotframeworkWelcome",
   TITLE: "Welcome to Robotframework AIO",
   WELCOME_BUTTON_COMMAND: "extension.showRobotframeworkWelcome",
-  HISTORY_WEBVIEW: []
+  HISTORY_WEBVIEW: [],
+  LIBDOC_BACK: false
 };

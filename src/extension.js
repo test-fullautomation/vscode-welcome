@@ -164,6 +164,7 @@ function showWelcomePage(context, config = vscode.workspace.getConfiguration(con
 
     panel.onDidDispose(() => {
         constants.IS_WELCOME_PAGE_OPEN = false;
+        constants.LIBDOC_BACK = false
     }, null, context.subscriptions);
 }
 
@@ -284,6 +285,7 @@ async function loadWebviewContent(message, panel) {
 
         // Inject styles and scripts if it's a default welcome page with "libdoc-title"
         if (constants.REGEX_DEFAULT_FILE_PATH.test(filePath) && fileContent.includes("libdoc-title")) {
+            constants.LIBDOC_BACK = true
             const styles = `
                 <link href="vscode-welcome:styles.css" rel="stylesheet">
                 <link href="vscode-welcome:libdoc_styles.css" rel="stylesheet">
@@ -298,6 +300,13 @@ async function loadWebviewContent(message, panel) {
 
         // Replace assets and set the webview HTML
         panel.webview.html = assetsManager.resolveWebviewPath(panel.webview, fileContent);
+        if (constants.LIBDOC_BACK && constants.CURRENT_HTML_CONTENT_PATH.includes("index.html")) {
+            constants.LIBDOC_BACK = false
+
+            panel.webview.postMessage({
+                command: 'libdoc_back',
+            });
+        }
         constants.HISTORY_WEBVIEW.push(message.name)
     } catch (error) {
         vscode.window.showErrorMessage(`Failed to load asset: ${error.message}`);
