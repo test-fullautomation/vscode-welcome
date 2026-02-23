@@ -210,7 +210,12 @@ async function openRobotTestWorkspace() {
 
         // Check the user's choice
         if (userChoice === 'Yes') {
-            openSelectedFolder({ uri: workspacePath });
+            if (vscode.workspace.name == 'RobotTest (Workspace)') {
+                vscode.window.showInformationMessage('You are already in the RobotTest workspace.')
+            }
+            else {
+                openSelectedFolder({ uri: workspacePath });
+            }
         } else {
             vscode.window.showInformationMessage('Operation canceled.');
         }
