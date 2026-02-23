@@ -4,6 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const assetsManager = require('./assets_manager.js');
 const constants = require('./constants.js');
+const outputChannel = vscode.window.createOutputChannel('Main');
 
 function handleWelcomeUrl(context, config = vscode.workspace.getConfiguration(constants.CONFIG_SECTION)) {
     try {
@@ -140,7 +141,7 @@ function showWelcomePage(context, config = vscode.workspace.getConfiguration(con
                 await openFileDialog();
                 break;
             case 'openFolderDialog':
-                await openFolderDialog(context);
+                await openFolderDialog();
                 break;
             case 'changeWebview':
                 await loadWebviewContent(message, panel);
@@ -199,7 +200,6 @@ async function openRobotTestWorkspace() {
     try {
         let workspacePath = process.env['ROBOTTESTPATH'];
         workspacePath = path.join(workspacePath, 'RobotTest.code-workspace');
-
         // Show a confirmation dialog
         const userChoice = await vscode.window.showInformationMessage(
             'Do you want to open the RobotTest workspace?',
@@ -228,12 +228,35 @@ async function openSelectedFolder(message) {
     }
 }
 
+function configureDefaultRobotTestcaseFolder() {
+    try {
+        if (vscode.workspace.workspaceFolders == undefined) {
+            constants.DEFAULT_ROBOT_TESTCASE_FOLDER = process.env.RobotTestPath
+        }
+        else {
+            workspaceFolder = path.normalize(vscode.workspace.workspaceFolders[0].uri.fsPath)
+            let split = workspaceFolder.split(path.sep)
+            if (split.length > 1 && (split[split.length-1] == 'documentation' && split[split.length-2] == 'RobotTest')) {
+                constants.DEFAULT_ROBOT_TESTCASE_FOLDER = process.env.RobotTestPath
+            }
+            else {
+                constants.DEFAULT_ROBOT_TESTCASE_FOLDER = vscode.workspace.workspaceFolders[0].uri.fsPath;
+            }
+        }
+    }
+    catch {
+        constants.DEFAULT_ROBOT_TESTCASE_FOLDER = process.env.RobotTestPath
+        return
+    }
+}
+
 async function openFileDialog() {
+    configureDefaultRobotTestcaseFolder()
     const options = {
         canSelectMany: false,
-        openLabel: 'Open',
+        openLabel: 'Open', 
+        defaultUri: vscode.Uri.file(constants.DEFAULT_ROBOT_TESTCASE_FOLDER),
         filters: {
-            'Text files': ['txt'],
             'All files': ['*']
         }
     };
@@ -247,15 +270,18 @@ async function openFileDialog() {
     }
 }
 
-async function openFolderDialog(context) {
-    const folderUri = await vscode.window.showOpenDialog({
+async function openFolderDialog() {
+    configureDefaultRobotTestcaseFolder()
+    const options = {
         canSelectMany: false,
         openLabel: 'Open Folder',
+        defaultUri: vscode.Uri.file(constants.DEFAULT_ROBOT_TESTCASE_FOLDER),
         canSelectFolders: true,
         canSelectFiles: false,
         title: 'Open Folder'
-    });
+    };
 
+    const folderUri = await vscode.window.showOpenDialog(options);
     if (folderUri && folderUri[0]) {
         // This replaces the current workspace with the selected folder
         vscode.commands.executeCommand('vscode.openFolder', folderUri[0], false);
@@ -312,7 +338,7 @@ async function loadWebviewContent(message, panel) {
         vscode.window.showErrorMessage(`Failed to load asset: ${error.message}`);
     }
 }
-
+outputChannel.show();
 module.exports = {
     activate
 };
