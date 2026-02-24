@@ -2,9 +2,9 @@
 const vscode = require('vscode');
 const path = require('path');
 const fs = require('fs');
+const fsp = require('fs').promises;
 const assetsManager = require('./assets_manager.js');
 const constants = require('./constants.js');
-const outputChannel = vscode.window.createOutputChannel('Main');
 
 function handleWelcomeUrl(context, config = vscode.workspace.getConfiguration(constants.CONFIG_SECTION)) {
     try {
@@ -158,6 +158,9 @@ function showWelcomePage(context, config = vscode.workspace.getConfiguration(con
             case 'getWelcomePagePreference':
                 await getWelcomePagePreference(panel);
                 break;
+            case 'openSelectedFile':
+                await openSelectedFile(message.file);
+                break;
             default:
                 console.warn(`Unknown command: ${message.command}`);
         }
@@ -167,6 +170,32 @@ function showWelcomePage(context, config = vscode.workspace.getConfiguration(con
         constants.IS_WELCOME_PAGE_OPEN = false;
         constants.LIBDOC_BACK = false
     }, null, context.subscriptions);
+}
+
+async function openSelectedFile(message) {
+    if (message === 'Reference Documentation') {
+        let testcasesDir = process.env.ROBOTTESTPATH;
+        let documentationDir = testcasesDir.replace('testcases', 'documentation');
+        try {
+            // Read directory with promises
+            const files = await fsp.readdir(vscode.Uri.parse(documentationDir).fsPath);
+            // Filter for PDF files
+            const pdfFiles = files.filter(file => file.toLowerCase().endsWith('.pdf'));
+            if (pdfFiles.length === 0) {
+                console.error('No PDF files found in documentation directory.');
+                return;
+            }
+
+            // Pick the first PDF file (or adjust if you want multiple)
+            const pdfPath = path.join(documentationDir, pdfFiles[0]);
+            constants.REFERENCE_DOCUMENT = pdfPath;
+
+            // Open PDF using VS Code command
+            await vscode.commands.executeCommand('vscode.open', vscode.Uri.file(pdfPath));
+        } catch (error) {
+            console.error('Error opening PDF:', error);
+        }
+    }
 }
 
 async function setWelcomePagePreference(dontShowAgain) {
@@ -198,7 +227,7 @@ async function getWelcomePagePreference(panel) {
 
 async function openRobotTestWorkspace() {
     try {
-        let workspacePath = process.env['ROBOTTESTPATH'];
+        let workspacePath = process.env.ROBOTTESTPATH;
         workspacePath = path.join(workspacePath, 'RobotTest.code-workspace');
         // Show a confirmation dialog
         const userChoice = await vscode.window.showInformationMessage(
@@ -343,7 +372,7 @@ async function loadWebviewContent(message, panel) {
         vscode.window.showErrorMessage(`Failed to load asset: ${error.message}`);
     }
 }
-outputChannel.show();
+
 module.exports = {
     activate
 };

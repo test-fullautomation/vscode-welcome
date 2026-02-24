@@ -10,6 +10,7 @@ module.exports = {
   CURRENT_HTML_CONTENT_PATH: "",
   DEFAULT_ASSETS_PATH: "",
   DEFAULT_ROBOT_TESTCASE_FOLDER: "",
+  REFERENCE_DOCUMENT: "",
   IS_WELCOME_PAGE_OPEN: false,
   CONFIG_SECTION: "robotframeworkWelcome",
   TITLE: "Welcome to Robotframework AIO",
