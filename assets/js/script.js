@@ -41,6 +41,10 @@ document.addEventListener('DOMContentLoaded', function() {
    }
 });
 
+function openSelectedFile(file) {
+   vscode.postMessage({ command: 'openSelectedFile', file: file });
+}
+
 // Listen for messages from the extension
 window.addEventListener('message', event => {
    const message = event.data;
