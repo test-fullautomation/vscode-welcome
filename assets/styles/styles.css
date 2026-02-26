@@ -2,6 +2,7 @@ html, body {
    height: 100%;
    margin: 0;
    padding: 0;
+   overflow-y: scroll;
 }
 body {
    background-color: #1e1e1e;
@@ -110,4 +111,7 @@ body {
    min-height: 1.5rem;
    padding-left: 1.5em;
    margin-bottom: 12px;
+}
+ul.list-group + h4 {
+    margin-top: 20px;
 }
