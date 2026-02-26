@@ -73,6 +73,6 @@ window.addEventListener('message', event => {
             console.warn('documents-tab not found, stopping wait');
             clearInterval(intervalId);
          }
-      }, 50);
+      }, 10);
    }
 });
