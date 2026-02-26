@@ -11,7 +11,7 @@ module.exports = {
   DEFAULT_ASSETS_PATH: "",
   DEFAULT_ROBOT_TESTCASE_FOLDER: "",
   REFERENCE_DOCUMENT: "",
-  IS_WELCOME_PAGE_OPEN: false,
+  IS_WELCOME_PAGE_OPEN: true,
   CONFIG_SECTION: "robotframeworkWelcome",
   TITLE: "Welcome to Robotframework AIO",
   WELCOME_BUTTON_COMMAND: "extension.showRobotframeworkWelcome",
