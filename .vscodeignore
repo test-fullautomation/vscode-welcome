@@ -1,0 +1,8 @@
+additions/**
+config/**
+packagedoc/**
+VSCodeWelcome/**
+
+genpackagedoc.py
+build_vsix.sh
+setup.py
