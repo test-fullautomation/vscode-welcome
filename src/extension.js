@@ -174,7 +174,7 @@ function showWelcomePage(context, config = vscode.workspace.getConfiguration(con
 
 async function openSelectedFile(message) {
     if (message === 'Reference Documentation') {
-        let testcasesDir = process.env.ROBOTTESTPATH;
+        let testcasesDir = process.env.RobotTestPath;
         let documentationDir = testcasesDir.replace('testcases', 'documentation');
         try {
             // Read directory with promises
@@ -227,7 +227,7 @@ async function getWelcomePagePreference(panel) {
 
 async function openRobotTestWorkspace() {
     try {
-        let workspacePath = process.env.ROBOTTESTPATH;
+        let workspacePath = process.env.RobotTestPath;
         workspacePath = path.join(workspacePath, 'RobotTest.code-workspace');
         // Show a confirmation dialog
         const userChoice = await vscode.window.showInformationMessage(
